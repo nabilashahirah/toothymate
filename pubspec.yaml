@@ -1,0 +1,102 @@
+name: toothymate_app_4
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.1
+
+  # TensorFlow Lite packages
+  tflite_flutter: ^0.12.1
+
+  # Image picker for selecting photos
+  image_picker: ^1.0.7
+  image: ^3.3.0
+
+  # Camera for live scanning
+  camera: ^0.10.0+4
+
+  # 3D model viewer functionality
+  vector_math: ^2.1.4  # For 3D vector operations
+
+  # File system access
+  path_provider: any
+
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.1.1
+  confetti: ^0.7.0
+  audioplayers: any
+  flip_card: ^0.7.0
+  flutter_tts: ^4.2.2
+  youtube_player_flutter: ^9.1.1
+  google_generative_ai: ^0.4.5
+  flutter_dotenv: ^5.1.0
+  http: ^1.2.0  # Add this
+
+  #AR Punya 
+  ar_flutter_plugin: any
+  permission_handler: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+dependency_overrides:
+  permission_handler: ^11.3.1
+  permission_handler_android: ^12.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/tooth_logo.png
+    - assets/tooth_edu.png
+    - assets/tooth_AR.png
+    - assets/tooth_scan.png
+    - assets/models/toothymate_classifier.tflite
+    - assets/models/tooth.glb
+    - assets/models/info_icon.glb
+    - assets/json/lessons.json
+    - assets/audio/yahoo.mp3
+    - assets/audio/pop.mp3
+    - assets/audio/brushing_song.mp3
+    - assets/elearning/cavity_vs_healthy.png
+    - assets/elearning/healthy_teeth.png
+    - assets/elearning/plaque_calculus.png
+    - assets/elearning/stains.png
+    - assets/elearning/teeth_type.jpg
+    - assets/elearning/babytooth.png
+    - assets/elearning/brushteeth.png
+    - assets/elearning/calcium.png
+    - assets/elearning/candy.png
+    - assets/elearning/floss.png
+    - assets/elearning/gum.jpg
+    - assets/elearning/mom.png
+    - assets/elearning/scrubteeth.png
+    - assets/elearning/mascot_grad.png
+
+    
