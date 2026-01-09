@@ -19,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:confetti/confetti.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ToothARScreen extends StatefulWidget {
   const ToothARScreen({super.key});
@@ -37,7 +38,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
 
   bool _isModelReady = false;
   bool _isObjectPlaced = false;
-  String _debugStatus = "Initializing AR...";
+  String _debugStatus = "";
   
   // 🎮 Gamification: Track discovered cases
   Set<int> _discoveredCases = {};
@@ -60,63 +61,23 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
   late Animation<double> _pulseAnimation;
 
   // Dental case information with labels matching the 3D model
+  // Translation keys are used - actual content loaded via context.tr()
   final List<Map<String, String>> dentalCases = [
-    {
-      "label": "1",
-      "title": "Traditional Bridge",
-      "desc": "Like a bridge over a river! We put a fake tooth in the empty space and hold it up using the strong teeth next to it."
-    },
-    {
-      "label": "2",
-      "title": "Implant-Supported Bridge",
-      "desc": "A super strong bridge! Instead of holding onto other teeth, it stands on special metal roots hidden in the gums."
-    },
-    {
-      "label": "3",
-      "title": "Maryland Bridge",
-      "desc": "A bridge with wings! It has tiny wings that stick to the back of your other teeth to hold the new tooth in place."
-    },
-    {
-      "label": "4",
-      "title": "Dental Implant",
-      "desc": "A robot root! It's a tiny metal screw that acts like a real tooth root, so we can put a brand new tooth on top."
-    },
-    {
-      "label": "5",
-      "title": "Gingival Recession",
-      "desc": "When gums get shy and pull back! This happens if we brush too hard. We need to be gentle to keep gums happy."
-    },
-    {
-      "label": "6",
-      "title": "Root Canal Treatment (RCT)",
-      "desc": "Cleaning the inside of a tooth! If a tooth gets a tummy ache deep inside, the dentist cleans it out to make it feel better."
-    },
-    {
-      "label": "7",
-      "title": "Decayed Tooth",
-      "desc": "A tooth with a sugar bug hole! Germs made a tiny hole here. The dentist needs to clean it and patch it up."
-    },
-    {
-      "label": "8",
-      "title": "Impacted Wisdom Tooth",
-      "desc": "A sleeping tooth that's stuck! This big back tooth is trying to come out but got stuck against its neighbor."
-    },
-    {
-      "label": "9",
-      "title": "Wisdom Tooth",
-      "desc": "The grown-up teeth! These are the very last teeth to grow in the back of your mouth when you are much older."
-    },
-    {
-      "label": "10",
-      "title": "Class II Cavity Preparation",
-      "desc": "A hidden hole between teeth! Sugar bugs hid in the tight space between two teeth, so the dentist is fixing it."
-    },
+    {"label": "1", "titleKey": "case1Title", "descKey": "case1Desc"},
+    {"label": "2", "titleKey": "case2Title", "descKey": "case2Desc"},
+    {"label": "3", "titleKey": "case3Title", "descKey": "case3Desc"},
+    {"label": "4", "titleKey": "case4Title", "descKey": "case4Desc"},
+    {"label": "5", "titleKey": "case5Title", "descKey": "case5Desc"},
+    {"label": "6", "titleKey": "case6Title", "descKey": "case6Desc"},
+    {"label": "7", "titleKey": "case7Title", "descKey": "case7Desc"},
+    {"label": "8", "titleKey": "case8Title", "descKey": "case8Desc"},
+    {"label": "9", "titleKey": "case9Title", "descKey": "case9Desc"},
+    {"label": "10", "titleKey": "case10Title", "descKey": "case10Desc"},
   ];
 
   @override
   void initState() {
     super.initState();
-    _prepareLocalModel();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
 
     // 💓 Setup Pulse Animation
@@ -127,10 +88,22 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+
+    // Initialize after the first frame to avoid context issues
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _prepareLocalModel();
+      }
+    });
   }
 
   Future<void> _initTts() async {
-    await _flutterTts.setLanguage("en-US");
+    final String locale = context.locale.languageCode;
+    if (locale == 'ms') {
+      await _flutterTts.setLanguage('ms-MY');
+    } else {
+      await _flutterTts.setLanguage('en-US');
+    }
     await _flutterTts.setPitch(1.1); // Slightly higher pitch for a friendly tone
     await _flutterTts.setSpeechRate(0.5);
   }
@@ -138,18 +111,18 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
   Future<void> _speakInstructions() async {
     await _flutterTts.stop();
     if (_isObjectPlaced) {
-      await _flutterTts.speak("Walk around the tooth to find numbers, then tap the buttons below to learn!");
+      await _flutterTts.speak('walkAroundInstructions'.tr());
     } else {
-      await _flutterTts.speak("Welcome to Dr. Karthi's Magic Dental AR! Point your camera at a flat surface and tap the dots to place the tooth.");
+      await _flutterTts.speak('welcomeARInstructions'.tr());
     }
   }
 
   Future<void> _prepareLocalModel() async {
-    setState(() => _debugStatus = "Loading 3D model...");
-    
+    setState(() => _debugStatus = 'loadingModel'.tr());
+
     // 1. Initialize Voice Settings first
     await _initTts();
-   
+
     try {
       final directory = await getApplicationDocumentsDirectory();
       final path = '${directory.path}/tooth.glb';
@@ -162,9 +135,9 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
 
       setState(() {
         _isModelReady = true;
-        _debugStatus = "Point camera at flat surface and tap to place";
+        _debugStatus = 'pointCameraFlat'.tr();
       });
-      
+
       // 2. Speak ONLY when model is ready and spinner is gone
       _speakInstructions();
 
@@ -211,7 +184,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
   Future<void> onPlaneOrPointTapped(List<ARHitTestResult> hitTestResults) async {
     if (!_isModelReady) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Wait! Model not loaded yet."))
+        SnackBar(content: Text('waitModelNotLoaded'.tr()))
       );
       return;
     }
@@ -250,7 +223,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
 
         setState(() {
           _isObjectPlaced = true;
-          _debugStatus = "Walk around the tooth to find numbers!";
+          _debugStatus = 'walkAroundTooth'.tr();
         });
 
         // 🗣️ Auto-speak next step immediately after placement
@@ -270,7 +243,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
     setState(() {
       _isObjectPlaced = false;
       _discoveredCases.clear();
-      _debugStatus = "Point camera at flat surface and tap to place";
+      _debugStatus = 'pointCameraFlat'.tr();
     });
 
     // 🗣️ Auto-speak welcome instructions again after reset
@@ -290,16 +263,16 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "3D Dental AR",
-              style: TextStyle(
+            Text(
+              'dentalAR'.tr(),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              _debugStatus,
+              _debugStatus.isEmpty ? 'initializingAR'.tr() : _debugStatus,
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
@@ -311,12 +284,12 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
           IconButton(
             onPressed: _speakInstructions,
             icon: const Icon(Icons.volume_up, color: Colors.white),
-            tooltip: "Replay Instructions",
+            tooltip: 'replayInstructions'.tr(),
           ),
           IconButton(
             onPressed: onRemoveEverything,
             icon: const Icon(Icons.refresh, color: Colors.white),
-            tooltip: "Reset AR",
+            tooltip: 'resetAR'.tr(),
           )
         ],
       ),
@@ -353,14 +326,14 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: Colors.amber, width: 3),
                         ),
-                        child: const Column(
+                        child: Column(
                           children: [
-                            Icon(Icons.touch_app, color: Colors.amber, size: 50),
-                            SizedBox(height: 10),
+                            const Icon(Icons.touch_app, color: Colors.amber, size: 50),
+                            const SizedBox(height: 10),
                             Text(
-                              "TAP ON DOTS\nTO PLACE TOOTH!",
+                              'tapOnDotsToPlace'.tr(),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -372,9 +345,9 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Move phone gently to find dots...",
-                      style: TextStyle(
+                    Text(
+                      'movePhoneGently'.tr(),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -445,10 +418,10 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                             child: const Icon(Icons.touch_app, color: Colors.white, size: 24),
                           ),
                           const SizedBox(width: 12),
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              "How to Control the Model",
-                              style: TextStyle(
+                              'howToControl'.tr(),
+                              style: const TextStyle(
                                 color: Colors.amber,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -458,13 +431,13 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                         ],
                       ),
                       const SizedBox(height: 16),
-                      _buildGestureHint(Icons.pan_tool, "Move", "Drag with 1 finger to reposition"),
+                      _buildGestureHint(Icons.pan_tool, 'move'.tr(), 'dragOneFinger'.tr()),
                       const SizedBox(height: 8),
-                      _buildGestureHint(Icons.directions_walk, "Walk Around", "Go around the tooth to find numbers!"),
+                      _buildGestureHint(Icons.directions_walk, 'walkAround'.tr(), 'goAroundTooth'.tr()),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Tap anywhere to dismiss",
-                        style: TextStyle(
+                      Text(
+                        'tapToDismiss'.tr(),
+                        style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 12,
                           fontStyle: FontStyle.italic,
@@ -524,7 +497,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                               const Icon(Icons.emoji_events, color: Colors.amber, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                "Discovered: ${_discoveredCases.length}/10",
+                                'discovered'.tr(namedArgs: {'count': '${_discoveredCases.length}'}),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -532,11 +505,11 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                                 ),
                               ),
                               if (_discoveredCases.length == 10)
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 8),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8),
                                   child: Text(
-                                    "🎉 Complete!",
-                                    style: TextStyle(
+                                    'complete'.tr(),
+                                    style: const TextStyle(
                                       color: Colors.amber,
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -567,9 +540,9 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Text(
-                                        "HOW TO PLAY",
-                                        style: TextStyle(
+                                      Text(
+                                        'howToPlayAR'.tr(),
+                                        style: const TextStyle(
                                           color: Colors.amber,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
@@ -578,23 +551,23 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                                       ),
                                       RichText(
                                         textAlign: TextAlign.center,
-                                        text: const TextSpan(
-                                          style: TextStyle(
+                                        text: TextSpan(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                           ),
                                           children: [
-                                            TextSpan(text: "Look at numbers on teeth, then "),
+                                            TextSpan(text: 'lookAtNumbers'.tr()),
                                             TextSpan(
-                                              text: "TAP BUTTONS BELOW",
-                                              style: TextStyle(
+                                              text: 'tapButtonsBelow'.tr(),
+                                              style: const TextStyle(
                                                 color: Colors.amber,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
                                             ),
-                                            TextSpan(text: "!"),
+                                            const TextSpan(text: "!"),
                                           ],
                                         ),
                                       ),
@@ -802,7 +775,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Case ${data['label']}",
+                        'case'.tr(namedArgs: {'number': data['label']!}),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -811,7 +784,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        data['title']!,
+                        data['titleKey']!.tr(),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -826,10 +799,10 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                   onPressed: () async {
                     await _flutterTts.stop();
                     // Speak Title then Description
-                    await _flutterTts.speak("${data['title']}. ${data['desc']}");
+                    await _flutterTts.speak("${data['titleKey']!.tr()}. ${data['descKey']!.tr()}");
                   },
                   icon: const Icon(Icons.volume_up_rounded, color: Colors.blue, size: 32),
-                  tooltip: "Read Aloud",
+                  tooltip: 'readAloud'.tr(),
                 ),
               ],
             ),
@@ -842,7 +815,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                 border: Border.all(color: Colors.blue.shade100),
               ),
               child: Text(
-                data['desc']!,
+                data['descKey']!.tr(),
                 style: const TextStyle(
                   fontSize: 15,
                   color: Colors.black87,
@@ -866,9 +839,9 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                   ),
                   elevation: 2,
                 ),
-                child: const Text(
-                  "Close",
-                  style: TextStyle(
+                child: Text(
+                  'close'.tr(),
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,

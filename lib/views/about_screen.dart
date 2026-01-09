@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // --- THEME COLORS (Synced with Home Screen) ---
 class AppColors {
@@ -55,14 +56,14 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
         elevation: 0,
         automaticallyImplyLeading: false, // Removed Back Button (It's a main tab)
         centerTitle: true,
-        title: const Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.info_outline_rounded, color: Colors.white),
-            SizedBox(width: 10),
+            const Icon(Icons.info_outline_rounded, color: Colors.white),
+            const SizedBox(width: 10),
             Text(
-              'About Us',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
+              'about'.tr(),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
             ),
           ],
         ),
@@ -78,28 +79,28 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
               const SizedBox(height: 10),
               Image.asset('assets/tooth_logo.png', height: 100), // <--- Added Logo
               const SizedBox(height: 15),
-              const Text(
-                'ToothyMate',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.darkText),
+              Text(
+                'appName'.tr(),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppColors.darkText),
               ),
-              const Text(
-                'Healthy Smiles for Everyone!',
-                style: TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic),
+              Text(
+                'healthySmilesForEveryone'.tr(),
+                style: const TextStyle(fontSize: 16, color: Colors.grey, fontStyle: FontStyle.italic),
               ),
               const SizedBox(height: 30),
 
               // --- 2. WHAT WE DO ---
-              const _InfoCard(
-                title: 'Our Mission',
-                content: 'ToothyMate is your friendly dental companion! We make learning about oral hygiene fun using 3D models and AI magic.',
+              _InfoCard(
+                title: 'ourMission'.tr(),
+                content: 'ourMissionContent'.tr(),
                 icon: Icons.favorite_rounded,
                 iconColor: Colors.pinkAccent,
               ),
 
               // --- 3. TECH STACK ---
-              const _InfoCard(
-                title: 'Tech Magic',
-                content: 'Built with Flutter 🦋\nPowered by AI & TensorFlow Lite 🤖\nDesigned for Kids & Students 🎓',
+              _InfoCard(
+                title: 'techMagic'.tr(),
+                content: 'techMagicContent'.tr(),
                 icon: Icons.code_rounded,
                 iconColor: Colors.purpleAccent,
               ),
@@ -201,9 +202,9 @@ class _TeamCard extends StatelessWidget {
                     child: const Icon(Icons.groups_rounded, color: Colors.orange, size: 24),
                   ),
                   const SizedBox(width: 15),
-                  const Text(
-                    'The Dream Team',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText),
+                  Text(
+                    'developmentTeam'.tr(),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText),
                   ),
                 ],
               ),
@@ -211,12 +212,12 @@ class _TeamCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Divider(height: 1),
               ),
-              
-              const _TeamDetail(role: 'Developer', name: 'NUR NABILA SHAHIRAH BINTI SALIM', icon: Icons.person_rounded),
+
+              _TeamDetail(role: 'developer'.tr(), name: 'NUR NABILA SHAHIRAH BINTI SALIM', icon: Icons.person_rounded),
               const SizedBox(height: 10),
-              const _TeamDetail(role: 'Supervisor', name: 'TS. DR. NURUL AMELINA BINTI NASHARUDDIN', icon: Icons.school_rounded),
+              _TeamDetail(role: 'supervisor'.tr(), name: 'TS. DR. NURUL AMELINA BINTI NASHARUDDIN', icon: Icons.school_rounded),
               const SizedBox(height: 10),
-              const _TeamDetail(role: 'Partner', name: 'KLINIK PERGIGIAN DR KARTHI', icon: Icons.local_hospital_rounded),
+              _TeamDetail(role: 'partner'.tr(), name: 'clinicName'.tr(), icon: Icons.local_hospital_rounded),
             ],
           ),
         ),
@@ -265,9 +266,9 @@ class _VersionInfo extends StatelessWidget {
         children: [
           Icon(Icons.verified_user_rounded, size: 40, color: Colors.grey[300]),
           const SizedBox(height: 10),
-          Text('Version 1.0.1', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[600])),
+          Text('${'version'.tr()} 1.0.1', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[600])),
           const SizedBox(height: 5),
-          Text('© 2025 ToothyMate Project', style: TextStyle(fontSize: 12, color: Colors.grey[400])),
+          Text('copyright'.tr(), style: TextStyle(fontSize: 12, color: Colors.grey[400])),
         ],
       ),
     );

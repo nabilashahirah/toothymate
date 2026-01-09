@@ -1,0 +1,108 @@
+[
+  {
+    "id": "1",
+    "category": "Core",
+    "title": "Meet Your Teeth!",
+    "subtitle": "Discover your smile heroes 😁",
+    "image": "assets/elearning/teeth_type.jpg",
+    "content": "🦷 Hey Tooth Hero! Did you know your **teeth** are like a superhero team inside your mouth?\n\nLet’s meet them 👇\n\n• **Incisors** – Front teeth that **cut food** like scissors ✂️\n• **Canines** – The Tigers! 🐯 Sharp teeth that **tear food** like a tiger 🐯\n• **Premolars** – The Crushers! 🍪 Strong teeth that **crush snacks**\n• **Molars** – Big back teeth that **grind food** into tiny pieces 🥦\n\nInside every tooth, there are 3 important parts:\n• **Enamel** – The hard outer shield 🛡️\n• **Dentin** – The strong layer under enamel\n• **Pulp** – The soft center where nerves live ⚡\n\n💡 **Why this matters:** Healthy teeth help you eat, talk, and smile with confidence!\n🎯 **Mini Challenge:** Can you count how many teeth you have today? 😄\n🤖 *AI link:* AI checks these teeth to see if they are healthy or not."
+  },
+  {
+    "id": "2",
+    "category": "Core",
+    "title": "Cavities & Plaque",
+    "subtitle": "Tiny germs that can harm your teeth 🦠",
+    "image": "assets/elearning/cavity_vs_healthy.png",
+    "content": "Uh-oh! Tiny **germs** love sugar 🍬\nWhen you eat sweets and don’t brush, germs form a sticky layer called **plaque**.\n\n🦠 What happens next?\n• Plaque makes **acid**\n• Acid attacks the **enamel**\n• Small holes form — these are called **cavities**\n\nIf plaque stays too long, it can turn into **calculus (tartar)**, which brushing cannot remove.\n\n💡 **Easy prevention tips:**\n• Brush twice a day 🪥\n• Rinse your mouth after eating\n• Eat less sugary snacks\n\n🎯 **Mini Challenge:** Where do germs hide the most — front teeth or back teeth? 🤔\n🤖 *AI link:* AI can detect **possible cavities** from your tooth photo."
+  },
+  {
+    "id": "3",
+    "category": "Myth",
+    "title": "The Sugar Monster Myth 👹",
+    "subtitle": "Myth vs. Fact: Is candy the only villain?",
+    "image": "assets/elearning/candy.png",
+    "content": "Is candy the only thing that causes cavities? Let's find out! 🕵️‍♂️\n\n❌ **The Myth:** \"If I don't eat candy, I won't get cavities!\"\n✅ **The Fact:** Sticky foods like **crackers, bread, and dried fruit** can stay on your teeth longer than chocolate! 🥨 Bacteria turn these starches into acid just like sugar.\n\n🎯 **Mini Challenge:** Can you name one healthy snack that isn't sticky? 🍎"
+  },
+  {
+    "id": "4",
+    "category": "Mom",
+    "title": "Mom's Special Smile ✨",
+    "subtitle": "Mission: Protect Mom's Gums",
+    "image": "assets/elearning/gum.jpg",
+    "content": "Did you know that when a baby is growing, Mom's gums can get **sore, red, or puffy**? This is called 'Pregnancy Gingivitis.' 🤰\n\n**Your Hero Mission:**\n1. **The Reminder:** Ask Mom, 'Have you brushed your teeth for 2 minutes today?'\n2. **Spot the Signs:** If Mom says her gums are bleeding, tell her it's time to see the Dentist! 🦷\n3. **Gentle Care:** Remind her to use a **soft toothbrush** so it doesn't hurt her gums."
+  },
+  {
+    "id": "5",
+    "category": "Video",
+    "title": "The 2-Minute Groove! 💃",
+    "subtitle": "Watch: Brushing like a champion",
+    "image": "assets/elearning/brushteeth.png",
+    "videoUrl": "https://youtu.be/CmZp1wdJAw4?si=Q57U1KdjedGkdN0j",
+    "content": "Ready to dance with your toothbrush? 🪥✨\n\n**Learn the 3 Magic Moves:**\n1. **Small Circles:** Move your brush like a tiny Ferris wheel 🎡.\n2. **The 45-Degree Tilt:** Aim at the gum line where germs hide!\n3. **The Tongue Tickle:** Brush your tongue for super fresh breath! 👅\n\n📺 **Tap Play to start your training!**"
+  },
+  {
+    "id": "6",
+    "category": "Core",
+    "title": "Calculus (Tartar)",
+    "subtitle": "Hardened plaque to watch out for 🧱",
+    "image": "assets/elearning/plaque_calculus.png",
+    "content": "When plaque is not cleaned, it becomes hard like stone 🪨\nThis hard plaque is called **calculus** or **tartar**.\n\n📍 Where does it form?\n• Near the **gum line**\n• Between teeth\n\n⚠️ Why calculus is bad:\n• Makes gums sore\n• Causes bleeding gums\n• Makes teeth look yellow\n\n🪥 Brushing alone cannot remove calculus — only a **dentist** can.\n💡 **Tip:** Flossing helps stop plaque before it turns into calculus.\n🎯 **Mini Challenge:** Use your tongue 👅 — can you feel rough spots near your gums?\n🤖 *AI link:* AI can identify **calculus build-up** on teeth."
+  },
+  {
+    "id": "7",
+    "category": "Myth",
+    "title": "The 'Hard' Brush Myth 🪥",
+    "subtitle": "Myth vs. Fact: Scrubbing power!",
+    "image": "assets/elearning/scrubteeth.png",
+    "content": "Do you need to scrub your teeth like a dirty floor to get them clean? 🧼\n\n❌ **The Myth:** \"Brushing harder cleans my teeth better.\"\n✅ **The Fact:** Brushing too hard can **scratch your enamel shield** and make your gums shrink! 😱\n\n💡 **The Secret:** Use a **Soft-Bristled** brush and move in gentle circles. Massage your teeth, don't scrub them! 🌀"
+  },
+  {
+    "id": "8",
+    "category": "Mom",
+    "title": "Strong Teeth Builders 🥦",
+    "subtitle": "Eating for two (and for teeth!)",
+    "image": "assets/elearning/calcium.png",
+    "content": "Baby teeth start growing before the baby is even born! 👶 To make them strong, the baby needs **Calcium** from Mom's food.\n\n**Help Mom choose these 'Teeth Builders':**\n* **Milk & Yogurt:** These have calcium to build the baby's tooth 'armor' (enamel).\n* **Crunchy Veggies:** Carrots and broccoli keep Mom's mouth clean.\n* **Water First:** Help Mom choose water instead of sugary soda to keep her smile safe! 💧"
+  },
+  {
+    "id": "9",
+    "category": "Video",
+    "title": "The Flossing Thread Trick 🧵",
+    "subtitle": "Watch: Cleaning between the 'Hero Team'",
+    "image": "assets/elearning/floss.png",
+    "videoUrl": "https://youtu.be/VsgSLYWx5-0?si=btSSC-xrNk_vKvAw",
+    "content": "Toothbrushes can't reach everywhere! That's where **Floss** comes in. 🕵️‍♂️\n\n**What to watch for:**\n• **The 'C' Shape:** Wrap the floss around the tooth like a hug 🤗.\n• **Up and Down:** Gently slide it under the gum line.\n• **Fresh Spot:** Use a clean piece of thread for every tooth!\n\n📺 **Watch carefully and try it tonight!**"
+  },
+  {
+    "id": "10",
+    "category": "Core",
+    "title": "Stains & Discoloration",
+    "subtitle": "Keep your smile bright ✨",
+    "image": "assets/elearning/stains.png",
+    "content": "Some food and drinks can leave **stains** on your teeth ☕🍫\nThese stains make teeth look yellow or dull.\n\n🟡 Common stain causes:\n• Coffee & tea\n• Chocolate & sweets\n• Poor brushing habits\n\nThere are two types of stains:\n• **Surface stains** – Easy to clean\n• **Deep stains** – Need dentist care\n\n💡 **Keep teeth bright by:**\n• Drinking water after meals 💧\n• Brushing properly\n• Visiting the dentist regularly\n\n🎯 **Mini Challenge:** Look in the mirror — do your teeth look shiny today? ✨\n🤖 *AI link:* AI can detect **tooth stains** from images."
+  },
+  {
+    "id": "11",
+    "category": "Myth",
+    "title": "Baby Teeth Don't Matter? 👶",
+    "subtitle": "Myth vs. Fact: The First Team",
+    "image": "assets/elearning/babytooth.png",
+    "content": "Since baby teeth fall out, do we really need to worry about them? 🤔\n\n❌ **The Myth:** \"Baby teeth aren't important because they aren't permanent.\"\n✅ **The Fact:** Baby teeth are **Saving a Seat** for adult teeth! 🪑 If a baby tooth is lost too early, the adult tooth might grow in crooked or get stuck! 🦷✨\n\n🎯 **Mini Challenge:** Wiggle a tooth! Is one getting ready to leave the 'seat' for an adult tooth? 😄"
+  },
+  {
+    "id": "12",
+    "category": "Mom",
+    "title": "The Morning Sickness Trick 🧼",
+    "subtitle": "Protecting teeth from 'Tummy Acid' 🤢",
+    "image": "assets/elearning/mom.png",
+    "content": "Sometimes Mom feels sick in the morning. When she vomits, tummy acid can touch her teeth and make them weak. 🤢\n\n**The Secret Trick to tell Mom:**\n1. **Don't Brush Yet!** Tell Mom NOT to brush right away, or she might rub the acid into her teeth.\n2. **The Magic Rinse:** Give Mom a glass of water with a tiny bit of **baking soda** to rinse her mouth. 🥤\n3. **Wait 30 Minutes:** After rinsing, she can brush her teeth to make them sparkly and strong again!"
+  },
+  {
+    "id": "13",
+    "category": "Core",
+    "title": "Healthy Habits for Happy Teeth",
+    "subtitle": "Be a Smile Champion 🏆",
+    "image": "assets/elearning/healthy_teeth.png",
+    "content": "Healthy teeth don’t happen by luck — they need good habits 💪\n\n⭐ Daily habits to follow:\n• Brush twice a day 🪥\n• Floss every day 🧵\n• Eat fruits & vegetables 🍎🥕\n• Drink lots of water 💧\n• Visit the dentist 🏥\n\n😁 Why healthy teeth are important:\n• No pain\n• Fresh breath\n• Confident smile\n\n💡 **Good news:** Healthy teeth are easier for AI to recognize as **healthy**!\n🎯 **Mini Challenge:** Show your bright smile to your family today 😁\n🤖 *AI link:* AI labels your teeth as **Healthy** when good habits are followed."
+  }
+]

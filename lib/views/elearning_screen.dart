@@ -9,6 +9,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // --- App Colors & Styles ---
 class AppColors {
@@ -90,7 +91,10 @@ class _ElearningScreenState extends State<ElearningScreen> {
 
   Future<void> loadData() async {
     final prefs = await SharedPreferences.getInstance();
-    final String jsonString = await rootBundle.loadString('assets/json/lessons.json');
+    // Load lessons based on current locale
+    final String locale = context.locale.languageCode;
+    final String jsonPath = locale == 'ms' ? 'assets/json/lessons_ms.json' : 'assets/json/lessons_en.json';
+    final String jsonString = await rootBundle.loadString(jsonPath);
     final List<dynamic> jsonData = json.decode(jsonString);
     setState(() {
       allLessons = jsonData.map((e) => Lesson.fromJson(e)).toList();
@@ -129,17 +133,17 @@ class _ElearningScreenState extends State<ElearningScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("🎓 DENTAL MASTER GRADUATE 🎓", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange)),
+              Text("🎓 ${"dentalMasterGraduate".tr()} 🎓", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange)),
               const SizedBox(height: 20),
               Image.asset('assets/images/mascot_grad.png', height: 150, errorBuilder: (c,e,s) => const Icon(Icons.school, size: 100, color: Colors.amber)),
               const SizedBox(height: 20),
-              const Text("Amazing Work, Hero!", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const Text("You completed every mission. Your smile is officially a Super-Smile!", textAlign: TextAlign.center),
+              Text("amazingWorkHero".tr(), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              Text("completedEveryMission".tr(), textAlign: TextAlign.center),
               const SizedBox(height: 25),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-                child: const Text("I'm a Pro! ⭐", style: TextStyle(color: Colors.white)),
+                child: Text("imAPro".tr(), style: const TextStyle(color: Colors.white)),
               )
             ],
           ),
@@ -165,7 +169,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Achievement Gallery 🏅", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text("achievementGallery".tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             GridView.count(
               shrinkWrap: true, crossAxisCount: 2, mainAxisSpacing: 15, crossAxisSpacing: 15, childAspectRatio: 1.2,
@@ -177,7 +181,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
                     Icon(_getIcon(e.key), color: isDone ? _getColor(e.key) : Colors.grey, size: 40),
                     const SizedBox(height: 8),
                     Text(e.key, style: TextStyle(fontWeight: FontWeight.bold, color: isDone ? Colors.black : Colors.grey)),
-                    Text("${e.value} Done", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text("${e.value} ${"done".tr()}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ]),
                 );
               }).toList(),
@@ -199,9 +203,9 @@ class _ElearningScreenState extends State<ElearningScreen> {
       appBar: AppBar(
         flexibleSpace: Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.primaryBlue, AppColors.primaryDarkBlue], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
         iconTheme: const IconThemeData(color: Colors.white),
-        title: isSearching 
-          ? TextField(controller: _searchController, autofocus: true, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(hintText: "Search for a mission...", border: InputBorder.none, hintStyle: TextStyle(color: Colors.white60)), onChanged: (v) => _applyFilter())
-          : const Text("Knowledge Hub", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: isSearching
+          ? TextField(controller: _searchController, autofocus: true, style: const TextStyle(color: Colors.white), decoration: InputDecoration(hintText: "searchForAMission".tr(), border: InputBorder.none, hintStyle: const TextStyle(color: Colors.white60)), onChanged: (v) => _applyFilter())
+          : Text("knowledgeHub".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(icon: Icon(isSearching ? Icons.close : Icons.search), onPressed: () => setState(() { isSearching = !isSearching; if(!isSearching) { _searchController.clear(); _applyFilter(); } })),
           IconButton(icon: const Icon(Icons.emoji_events_outlined), onPressed: _showBadgeGallery),
@@ -217,17 +221,18 @@ class _ElearningScreenState extends State<ElearningScreen> {
   }
 
   void _showResetDialog() {
-    showDialog(context: context, builder: (c) => AlertDialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), title: const Text("Reset Progress?"), content: const Text("Do you want to clear your stars and badges?"), actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text("No")), TextButton(onPressed: () async { (await SharedPreferences.getInstance()).remove('completed_lessons'); setState(() => completedIds = []); Navigator.pop(c); _applyFilter(); }, child: const Text("Yes, Reset", style: TextStyle(color: Colors.red)))]));
+    showDialog(context: context, builder: (c) => AlertDialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), title: Text("resetProgress".tr()), content: Text("clearStarsAndBadges".tr()), actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text("no".tr())), TextButton(onPressed: () async { (await SharedPreferences.getInstance()).remove('completed_lessons'); setState(() => completedIds = []); Navigator.pop(c); _applyFilter(); }, child: Text("yesReset".tr(), style: const TextStyle(color: Colors.red)))]));
   }
 
   Widget _buildFilterBar() {
-    final cats = ["All", "Core", "Myth", "Mom", "Video"];
-    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: cats.map((c) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(c), selected: selectedCategory == c, onSelected: (v) { setState(() { selectedCategory = c; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == c ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
+    final cats = ["all", "core", "mom", "video"];
+    final catsDisplay = {"all": "All", "core": "Core", "mom": "Mom", "video": "Video"};
+    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: cats.map((c) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(c.tr()), selected: selectedCategory == catsDisplay[c], onSelected: (v) { setState(() { selectedCategory = catsDisplay[c]!; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == catsDisplay[c] ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
   }
 
   Widget _buildProgressHeader() {
     double p = allLessons.isEmpty ? 0 : completedIds.length / allLessons.length;
-    return Container(margin: const EdgeInsets.fromLTRB(20, 0, 20, 15), padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)]), child: Row(children: [ Stack(alignment: Alignment.center, children: [CircularProgressIndicator(value: p, backgroundColor: Colors.grey.shade100, color: AppColors.primaryDarkBlue, strokeWidth: 6), Text("${(p*100).toInt()}%", style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold))]), const SizedBox(width: 20), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text("Your Journey", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)), Text("${completedIds.length} lessons finished!", style: TextStyle(color: Colors.grey.shade600, fontSize: 13))])), const Icon(Icons.stars_rounded, color: Colors.amber, size: 40)]));
+    return Container(margin: const EdgeInsets.fromLTRB(20, 0, 20, 15), padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(25), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)]), child: Row(children: [ Stack(alignment: Alignment.center, children: [CircularProgressIndicator(value: p, backgroundColor: Colors.grey.shade100, color: AppColors.primaryDarkBlue, strokeWidth: 6), Text("${(p*100).toInt()}%", style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold))]), const SizedBox(width: 20), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text("yourJourney".tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)), Text("${completedIds.length} ${"lessonsFinished".tr()}", style: TextStyle(color: Colors.grey.shade600, fontSize: 13))])), const Icon(Icons.stars_rounded, color: Colors.amber, size: 40)]));
   }
 
   Widget _buildLessonList() {
@@ -282,16 +287,42 @@ class _LessonScreenState extends State<LessonScreen> {
   void initState() {
     super.initState();
     _confetti = ConfettiController(duration: const Duration(seconds: 2));
+
     if (widget.lesson.videoUrl.isNotEmpty) {
       final id = YoutubePlayer.convertUrlToId(widget.lesson.videoUrl);
       if (id != null) yt = YoutubePlayerController(initialVideoId: id, flags: const YoutubePlayerFlags(autoPlay: false));
     }
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if(mounted){
-        String msg = widget.lesson.category == "Video" ? "Watch the video first, then tap play to follow along!" : "Let's learn about ${widget.lesson.title}";
-        tts.speak(msg);
-      }
+
+    // Configure TTS and speak intro message after build completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setupTts();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if(mounted){
+          String msg = widget.lesson.category == "Video"
+            ? "watchVideoFirst".tr()
+            : "${"letsLearnAbout".tr()} ${widget.lesson.title}";
+          tts.speak(_removeEmojis(msg));
+        }
+      });
     });
+  }
+
+  // Helper function to remove emojis from text
+  String _removeEmojis(String text) {
+    return text.replaceAll(RegExp(r'[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]', unicode: true), '').trim();
+  }
+
+  void _setupTts() async {
+    if (!mounted) return;
+    final String locale = context.locale.languageCode;
+    // Set language: 'en-US' for English, 'ms-MY' for Malay
+    if (locale == 'ms') {
+      await tts.setLanguage('ms-MY'); // Malay (Malaysia)
+    } else {
+      await tts.setLanguage('en-US'); // English (US)
+    }
+    await tts.setSpeechRate(0.5); // Adjust speech speed (0.5 is slower, good for kids)
+    await tts.setPitch(1.0); // Normal pitch
   }
 
   void _showQuizDialog() {
@@ -299,7 +330,7 @@ class _LessonScreenState extends State<LessonScreen> {
     if (!lessonQuizzes.containsKey(widget.lesson.id)) { _finish(); return; }
     showDialog(context: context, barrierDismissible: false, builder: (c) => StatefulBuilder(builder: (c, state) => AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      title: const Text("Knowledge Check! 🧠", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+      title: Text("knowledgeCheck".tr(), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         Text(lessonQuizzes[widget.lesson.id]!['q'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
         if(err != null) Padding(padding: const EdgeInsets.only(top: 10), child: Text(err!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))),
@@ -308,7 +339,7 @@ class _LessonScreenState extends State<LessonScreen> {
           padding: const EdgeInsets.only(bottom: 10),
           child: SizedBox(width: double.infinity, height: 50, child: ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-            onPressed: (){ if(o == lessonQuizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "Not quite! Try again! ❌"); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+            onPressed: (){ if(o == lessonQuizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "notQuiteTryAgain".tr()); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
         ))
       ]),
     )));
@@ -319,7 +350,7 @@ class _LessonScreenState extends State<LessonScreen> {
     List<String> done = prefs.getStringList('completed_lessons') ?? [];
     if (!done.contains(widget.lesson.id)) { done.add(widget.lesson.id); await prefs.setStringList('completed_lessons', done); }
     _confetti.play(); sfx.play(AssetSource('audio/yahoo.mp3'));
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Hero Progress Saved! ⭐"), backgroundColor: Colors.green));
+    if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("heroProgressSaved".tr()), backgroundColor: Colors.green));
   }
 
   void _toggleTimer() async {
@@ -356,13 +387,17 @@ class _LessonScreenState extends State<LessonScreen> {
               Expanded(child: Text(widget.lesson.subtitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryDarkBlue))),
               if (!isVideo) IconButton(icon: Icon(isSpeaking ? Icons.stop_circle : Icons.volume_up_rounded, color: AppColors.primaryDarkBlue, size: 35), onPressed: () {
                 if (isSpeaking) { tts.stop(); setState(() => isSpeaking = false); }
-                else { tts.speak(widget.lesson.content.replaceAll("**", "")); setState(() => isSpeaking = true); }
+                else {
+                  String contentToSpeak = _removeEmojis(widget.lesson.content.replaceAll("**", ""));
+                  tts.speak(contentToSpeak);
+                  setState(() => isSpeaking = true);
+                }
               }),
             ]),
             const SizedBox(height: 15),
             if (isMyth) _buildFlipCard() else RichText(text: widget.lesson.parsedContent),
             const SizedBox(height: 40),
-            Center(child: ElevatedButton.icon(onPressed: _showQuizDialog, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: const Text("I Learned This! 🌟", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
+            Center(child: ElevatedButton.icon(onPressed: _showQuizDialog, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("I Learned This! 🌟", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
             const SizedBox(height: 50),
           ])),
         ])),
@@ -374,11 +409,11 @@ class _LessonScreenState extends State<LessonScreen> {
   Widget _buildTimerUI() {
     bool isFloss = widget.lesson.title.toLowerCase().contains("floss");
     return Column(children: [
-      Container(margin: const EdgeInsets.only(bottom: 12), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.amber.shade100, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.amber.shade300)), child: const Row(children: [Icon(Icons.lightbulb_outline, color: Colors.orange), SizedBox(width: 10), Expanded(child: Text("Watch the video first, then tap Play to follow along!", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown, fontSize: 13)))])),
+      Container(margin: const EdgeInsets.only(bottom: 12), padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.amber.shade100, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.amber.shade300)), child: Row(children: [const Icon(Icons.lightbulb_outline, color: Colors.orange), const SizedBox(width: 10), Expanded(child: Text("watchVideoFirst".tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.brown, fontSize: 13)))])),
       Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(25), border: Border.all(color: AppColors.primaryBlue, width: 2)), child: Row(children: [
         Stack(alignment: Alignment.center, children: [SizedBox(width: 60, height: 60, child: CircularProgressIndicator(value: time/120, color: AppColors.primaryDarkBlue, backgroundColor: Colors.white)), Text("${time~/60}:${(time%60).toString().padLeft(2,'0')}", style: const TextStyle(fontWeight: FontWeight.bold))]),
         const SizedBox(width: 20),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(isFloss ? "Floss Along! 🧵" : "Brush Along! 🎵", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), Text(active ? "Doing great! ✨" : "Ready? Tap Play!")])),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(isFloss ? "flossAlong".tr() : "brushAlong".tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), Text(active ? "doingGreat".tr() : "readyTapPlay".tr())])),
         IconButton(icon: Icon(active ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 50, color: AppColors.primaryDarkBlue), onPressed: _toggleTimer),
       ])),
     ]);

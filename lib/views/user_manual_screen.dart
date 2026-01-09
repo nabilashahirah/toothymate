@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart'; 
+import 'package:easy_localization/easy_localization.dart';
 import 'welcome_screens.dart'; 
 
 // --- THEME COLORS ---
@@ -56,15 +57,15 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        title: const Text("Start New Adventure?", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.accentOrange)),
-        content: const Column(
+        title: Text('startNewAdventure'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.accentOrange)),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.warning_amber_rounded, size: 60, color: AppColors.accentOrange),
-            SizedBox(height: 15),
-            Text("This will delete your Name, Level, and Trophies forever!", textAlign: TextAlign.center),
-            SizedBox(height: 10),
-            Text("Are you sure?", style: TextStyle(fontWeight: FontWeight.bold)),
+          children: <Widget>[
+            const Icon(Icons.warning_amber_rounded, size: 60, color: AppColors.accentOrange),
+            const SizedBox(height: 15),
+            Text('resetWarning'.tr(), textAlign: TextAlign.center),
+            const SizedBox(height: 10),
+            Text('areYouSure'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
@@ -73,7 +74,7 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
               _playPop(); 
               Navigator.pop(context, false);
             }, 
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey))
+            child: Text('cancel'.tr(), style: const TextStyle(color: Colors.grey))
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.dangerRed, shape: const StadiumBorder()),
@@ -81,7 +82,7 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
               _playPop(); 
               Navigator.pop(context, true);
             }, 
-            child: const Padding(padding: EdgeInsets.symmetric(horizontal: 15), child: Text("Yes, Reset!", style: TextStyle(color: Colors.white))),
+            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 15), child: Text('yesReset'.tr(), style: const TextStyle(color: Colors.white))),
           ),
         ],
       ),
@@ -119,12 +120,12 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
         elevation: 0,
         automaticallyImplyLeading: false, 
         centerTitle: true,
-        title: const Row(
+        title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.menu_book_rounded, color: Colors.white),
-            SizedBox(width: 10),
-            Text('Hero Guide', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
+            const Icon(Icons.menu_book_rounded, color: Colors.white),
+            const SizedBox(width: 10),
+            Text('heroGuide'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22)),
           ],
         ),
       ),
@@ -135,21 +136,21 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
           child: Column(
             children: <Widget>[
               // --- SECTION 1: HOW TO PLAY ---
-              _buildSectionHeader("How to Play", Icons.gamepad_rounded, AppColors.successGreen),
+              _buildSectionHeader('howToPlay'.tr(), Icons.gamepad_rounded, AppColors.successGreen),
               const SizedBox(height: 10),
-              const _ManualSection(
+              _ManualSection(
                 children: [
                   _ManualEntry(
-                    header: '🔥 How do I get a Streak?',
-                    content: 'A Streak is when you brush everyday without stopping! Tap the checkboxes on the Home screen daily. If you miss one day, your fire goes out!',
+                    header: '${'fire'.tr()} ${'howDoIGetAStreak'.tr()}',
+                    content: 'streakExplanation'.tr(),
                   ),
                   _ManualEntry(
-                    header: '🆙 How do I Level Up?',
-                    content: 'You need XP (Experience Points) to level up. Every time you tick a mission, you get +20 XP. Reach 100 XP to grow from a Cadet to a Legend!',
+                    header: '${'upArrow'.tr()} ${'howDoILevelUp'.tr()}',
+                    content: 'levelUpExplanation'.tr(),
                   ),
                   _ManualEntry(
-                    header: '🏆 How to unlock Trophies?',
-                    content: 'Tap on any gray trophy to see the secret mission. Some require brushing early, and some require finishing lessons in Tooth School.',
+                    header: '${'trophy'.tr()} ${'howToUnlockTrophies'.tr()}',
+                    content: 'trophiesExplanation'.tr(),
                   ),
                 ],
               ),
@@ -157,22 +158,22 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
               const SizedBox(height: 25),
 
               // --- SECTION 2: COOL FEATURES (Updated!) ---
-              _buildSectionHeader("Cool Features", Icons.star_rounded, Colors.amber),
+              _buildSectionHeader('coolFeatures'.tr(), Icons.star_rounded, Colors.amber),
               const SizedBox(height: 10),
-              const _ManualSection(
+              _ManualSection(
                 children: [
                   // 🔥 NEW: E-Learning Info
                   _ManualEntry(
-                    header: '📚 Tooth School & Quiz',
-                    content: 'Go to the "Learn" tab to watch videos! Test your brain with Quizzes and use the Timer to brush perfectly for 2 minutes.',
+                    header: '${'books'.tr()} ${'toothSchoolAndQuiz'.tr()}',
+                    content: 'toothSchoolExplanation'.tr(),
                   ),
                   _ManualEntry(
-                    header: '📸 Magic AI Scanner',
-                    content: 'Tap the big Orange Button at the bottom! Point the camera at your teeth to detect plaque or cavities using AI.',
+                    header: '${'camera'.tr()} ${'magicAiScanner'.tr()}',
+                    content: 'aiScannerExplanation'.tr(),
                   ),
                   _ManualEntry(
-                    header: '✨ 3D Magic Camera',
-                    content: 'Tap the blue card on the Home screen to see a magical 3D tooth floating in your room!',
+                    header: '${'sparkles'.tr()} ${'threeDMagicCamera'.tr()}',
+                    content: 'threeDCameraExplanation'.tr(),
                   ),
                 ],
               ),
@@ -180,17 +181,17 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
               const SizedBox(height: 25),
 
               // --- SECTION 3: HELP ---
-              _buildSectionHeader("Fixing Glitches", Icons.build_rounded, Colors.grey),
+              _buildSectionHeader('fixingGlitches'.tr(), Icons.build_rounded, Colors.grey),
               const SizedBox(height: 10),
-              const _ManualSection(
+              _ManualSection(
                 children: [
                   _ManualEntry(
-                    header: 'App is slow?',
-                    content: 'Try closing other apps on your phone. ToothyMate needs energy to run the AI Scanner!',
+                    header: 'appIsSlow'.tr(),
+                    content: 'appSlowExplanation'.tr(),
                   ),
                   _ManualEntry(
-                    header: 'Sound not working?',
-                    content: 'Check your phone volume. We want you to hear the "Yahoo!" when you win.',
+                    header: 'soundNotWorking'.tr(),
+                    content: 'soundExplanation'.tr(),
                   ),
                 ],
               ),
@@ -208,9 +209,9 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
                 ),
                 child: Column(
                   children: [
-                    const Text("Danger Zone ⚠️", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.dangerRed)),
+                    Text("${'dangerZone'.tr()} ⚠️", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.dangerRed)),
                     const SizedBox(height: 5),
-                    const Text("Want to start over with a new name?", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                    Text('wantToStartOver'.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
                     const SizedBox(height: 15),
                     SizedBox(
                       width: double.infinity,
@@ -223,7 +224,7 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
                         ),
                         onPressed: () => _resetAdventure(context),
                         icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-                        label: const Text("Reset My Adventure", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                        label: Text('resetMyAdventure'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
                   ],
@@ -318,7 +319,7 @@ class _ContactInfo extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          const Text('Need help?', style: TextStyle(fontSize: 14, color: Colors.grey)),
+          Text('needHelp'.tr(), style: const TextStyle(fontSize: 14, color: Colors.grey)),
           const SizedBox(height: 4),
           SelectableText('nnabila.salim@gmail.com', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primaryDarkBlue.withOpacity(0.8))),
         ],

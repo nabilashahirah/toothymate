@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/sound_manager.dart'; // Ensure this path matches your folder structure
 import 'home_screen.dart'; 
@@ -116,9 +117,9 @@ class OnboardingScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 
                 // --- TITLE ---
-                const Text(
-                  'ToothyMate', 
-                  style: TextStyle(
+                Text(
+                  'welcomeTitle'.tr(), 
+                  style: const TextStyle(
                     fontSize: 45, fontWeight: FontWeight.w900, color: Colors.white,
                     shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]
                   )
@@ -134,19 +135,19 @@ class OnboardingScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25),
                     boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15, offset: const Offset(0, 5))],
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
                       Text(
-                        "Dr. Karthi Needs You! 🦸‍♂️", // <--- CLIENT BRANDING
+                        "Dr. Karthi Needs You!", // <--- CLIENT BRANDING
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
-                      ),
+                      ).tr(),
                       SizedBox(height: 12),
                       Text(
-                        "Join Klinik Pergigian Dr. Karthi's mission to fight Sugar Bugs! Use AI to scan your teeth and keep your smile shining.",
+                        "joinMission",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
-                      ),
+                      ).tr(),
                     ],
                   ),
                 ),
@@ -168,7 +169,7 @@ class OnboardingScreen extends StatelessWidget {
                       elevation: 8,
                       shadowColor: Colors.orangeAccent,
                     ),
-                    child: const Text('Get Started 🚀', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: Text('${'getStarted'.tr()} 🚀', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -239,7 +240,7 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
       _shakeController.forward(from: 0); // Trigger Shake
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text("Oops! You forgot your name!", style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Text('oopsForgotName'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -267,12 +268,12 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
                     
                     // --- JUICE: Dynamic Greeting ---
                     Text(
-                      "Hello, $_displayName!", 
+                      "${'hello'.tr()}, $_displayName!", 
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white)
                     ),
                     const SizedBox(height: 10),
-                    const Text("Type your name below:", style: TextStyle(color: Colors.white70, fontSize: 16)),
+                    Text('typeYourName'.tr(), style: const TextStyle(color: Colors.white70, fontSize: 16)),
                     const SizedBox(height: 30),
                     
                     // --- JUICE: Shake Animation ---
@@ -291,7 +292,7 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          hintText: "Your Name...",
+                          hintText: 'yourName'.tr(),
                           hintStyle: TextStyle(color: Colors.grey[400]),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -314,7 +315,7 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           elevation: 5
                         ),
-                        child: const Text("Let's Go! 🚀", style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: Text("${'letsGo'.tr()} 🚀", style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -376,16 +377,16 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 10),
-              const Text(
-                "Look what you can do!", 
+              Text(
+                'lookWhatYouCanDo'.tr(), 
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF0288D1)),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF0288D1)),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "You have 3 super tools:",
+              Text(
+                'youHaveThreeTools'.tr(),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
               const SizedBox(height: 25),
               
@@ -398,8 +399,8 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
                   offset: _showCard1 ? Offset.zero : const Offset(0, 20),
                   child: _buildGradientCard(
                     imagePath: 'assets/tooth_scan.png', // <--- YOUR CUSTOM IMAGE
-                    title: "AI Tooth Scanner", 
-                    subtitle: "Finds cavities, stains & plaque!", 
+                    title: 'aiToothScanner'.tr(), 
+                    subtitle: 'findsCavities'.tr(), 
                     gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
                   ),
                 ),
@@ -415,8 +416,8 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
                   offset: _showCard2 ? Offset.zero : const Offset(0, 20),
                   child: _buildGradientCard(
                     imagePath: 'assets/tooth_AR.png', // <--- YOUR CUSTOM IMAGE
-                    title: "3D Magic Models", 
-                    subtitle: "See inside a tooth with magic!", 
+                    title: 'threeDMagicModels'.tr(), 
+                    subtitle: 'seeInsideTooth'.tr(), 
                     gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
                   ),
                 ),
@@ -432,8 +433,8 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
                   offset: _showCard3 ? Offset.zero : const Offset(0, 20),
                   child: _buildGradientCard(
                     imagePath: 'assets/tooth_edu.png', // <--- YOUR CUSTOM IMAGE
-                    title: "Smart E-Learning",  
-                    subtitle: "Includes Games, Quiz & Timer!", 
+                    title: 'smartELearning'.tr(),  
+                    subtitle: 'includesGames'.tr(), 
                     gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
                   ),
                 ),
@@ -458,7 +459,7 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
                       elevation: 8,
                       shadowColor: Colors.blueAccent.withOpacity(0.5),
                     ),
-                    child: const Text("Start My Adventure! ⭐", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: Text("${'startAdventure'.tr()} ⭐", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
               ),

@@ -2,6 +2,8 @@
 
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart'; // Add this
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:confetti/confetti.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       HomeContent(key: _homeKey), 
       const ElearningScreen(),
       const AboutScreen(),
-      const UserManualScreen(),
+      const UserManualScreen(), // This is fine because UserManualScreen uses Consumer internally
     ];
 
     // 💓 Pulse Animation for the AI Scanner Button
@@ -70,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return Scaffold(
       backgroundColor: AppColors.background,
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      
+
       // --- SUPER SCANNER BUTTON (AI SCANNER) ---
       floatingActionButton: ScaleTransition(
         scale: _fabScaleAnimation,
@@ -93,18 +95,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      
+
       // --- BOTTOM NAVIGATION BAR ---
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(), notchMargin: 10.0, color: Colors.white,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavBarItem(Icons.home_rounded, "Home", 0),
-            _buildNavBarItem(Icons.school_rounded, "Learn", 1),
-            const SizedBox(width: 48), 
-            _buildNavBarItem(Icons.info_rounded, "About", 2),
-            _buildNavBarItem(Icons.menu_book_rounded, "Guide", 3),
+            _buildNavBarItem(Icons.home_rounded, 'home'.tr(), 0),
+            _buildNavBarItem(Icons.school_rounded, 'learn'.tr(), 1),
+            const SizedBox(width: 48),
+            _buildNavBarItem(Icons.info_rounded, 'about'.tr(), 2),
+            _buildNavBarItem(Icons.menu_book_rounded, 'guide'.tr(), 3),
           ],
         ),
       ),
@@ -354,24 +356,24 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Your Hero Rank 🎖️", textAlign: TextAlign.center, style: TextStyle(color: AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)),
+        title: Text('yourHeroRank'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.shield_rounded, size: 60, color: AppColors.primaryBlue),
           const SizedBox(height: 15),
-          Text("Current: Level $_level", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          Text("Rank: ${_getRankName(_level)}", textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+          Text('currentLevel'.tr(namedArgs: {'level': '$_level'}), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text('rankColon'.tr(namedArgs: {'rank': _getRankName(_level)}), textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
           const Divider(height: 30),
-          const Text("⬇️ HOW TO UPGRADE ⬇️", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.orange)),
+          Text("⬇️ ${'howToUpgrade'.tr()} ⬇️", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.orange)),
           const SizedBox(height: 10),
-          Text("You need $_xpToNextLevel XP to reach Level ${_level + 1}!", textAlign: TextAlign.center),
+          Text('needXPForNextLevel'.tr(namedArgs: {'xp': '$_xpToNextLevel', 'level': '${_level + 1}'}), textAlign: TextAlign.center),
           const SizedBox(height: 5),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
-            child: const Text("Tick the 'My Missions' checklist every day to get XP!", textAlign: TextAlign.center, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            child: Text('tickChecklist'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           )
         ]),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Awesome!"))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('awesome'.tr()))],
       ),
     );
   }
@@ -379,32 +381,32 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
   void _showStreakInfo() {
     showDialog(context: context, builder: (context) => AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Text("Keep the Fire! 🔥", textAlign: TextAlign.center, style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
-      content: const Text("Complete ALL daily missions to grow your streak!\n\nIf you miss a day, it resets to 0!", textAlign: TextAlign.center),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Got it!"))],
+      title: Text('keepFire'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+      content: Text('completeDailyMissions'.tr(), textAlign: TextAlign.center),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('gotIt'.tr()))],
     ));
   }
   
   void _showBadgeMission(String t, String instructions, bool u) {
     showDialog(context: context, builder: (context) => AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: Text(u ? "You Won! 🏆" : "How to Unlock 🔒", textAlign: TextAlign.center, style: TextStyle(color: u ? Colors.green : Colors.grey)), 
+      title: Text(u ? 'youWon'.tr() : 'howToUnlock'.tr(), textAlign: TextAlign.center, style: TextStyle(color: u ? Colors.green : Colors.grey)), 
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         Icon(u ? Icons.check_circle : Icons.lock, size: 50, color: u ? Colors.green : Colors.grey),
         const SizedBox(height: 15),
         Text(t, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)), 
         const SizedBox(height: 10),
-        Text(u ? "Mission Complete! Great job." : instructions, textAlign: TextAlign.center, style: const TextStyle(fontSize: 15)),
+        Text(u ? 'missionComplete'.tr() : instructions, textAlign: TextAlign.center, style: const TextStyle(fontSize: 15)),
       ]),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Okay"))],
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('okay'.tr()))],
     ));
   }
 
   void _showLevelUpDialog(int level) {
       showDialog(context: context, builder: (context) => AlertDialog(
-        title: const Text("LEVEL UP! ⭐", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)), 
-        content: Text("Yahoo $_userName!\nYou are now Level $level!"),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("YAY!"))],
+        title: Text('levelUp'.tr(), style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+        content: Text('yahoo'.tr(namedArgs: {'name': _userName, 'level': '$level'})),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('yay'.tr()))],
       ));
   }
 
@@ -415,11 +417,11 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("What is your name? 🖊️", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('whatIsYourName'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
         content: TextField(
           controller: nameController,
           autofocus: true, // ⚡ UX: Open keyboard immediately
-          decoration: const InputDecoration(hintText: "Enter your name"),
+          decoration: InputDecoration(hintText: 'enterYourName'.tr()),
           textCapitalization: TextCapitalization.words,
         ),
         actions: [
@@ -430,7 +432,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
               if (mounted) Navigator.pop(context);
               _loadData();
             },
-            child: const Text("Save"),
+            child: Text('save'.tr()),
           )
         ],
       ),
@@ -439,169 +441,170 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    String rankName = _getRankName(_level);
-    String nextRankName = _getNextRankName(_level);
-    int nextRankLvl = _getNextRankLevel(_level);
-    
-    // 🔥 FIXED: Get the start level so progress bar is accurate
-    int startRankLvl = _getStartRankLevel(_level);
+    // Removed Consumer<LocalizationService> wrapper
+        String rankName = _getRankName(_level);
+        String nextRankName = _getNextRankName(_level);
+        int nextRankLvl = _getNextRankLevel(_level);
 
-    // ✨ UI ENHANCEMENT: Use Stack for seamless background layering
-    return Stack(
-      children: [
-        // 1. FIXED BACKGROUND GRADIENT (Solves the "Dark Corner" issue)
-        Container(
-          height: 400, // Covers the top part of the screen
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.primaryBlue, AppColors.primaryDarkBlue],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        // 🔥 FIXED: Get the start level so progress bar is accurate
+        int startRankLvl = _getStartRankLevel(_level);
+
+        // ✨ UI ENHANCEMENT: Use Stack for seamless background layering
+        return Stack(
+          children: [
+            // 1. FIXED BACKGROUND GRADIENT (Solves the "Dark Corner" issue)
+            Container(
+              height: 400, // Covers the top part of the screen
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primaryBlue, AppColors.primaryDarkBlue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
-          ),
-        ),
 
-        // 2. SCROLLABLE CONTENT
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              // HEADER (Transparent, sits on top of gradient)
-              SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 40), // More breathing room
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center, // Align center vertically
-                    children: [
-                      // LEFT SIDE: Greeting
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: _showEditNameDialog, // ✏️ Tap to edit name
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text('Hi, $_userName!', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, shadows: [Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))]), overflow: TextOverflow.ellipsis),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-                                    child: const Icon(Icons.edit_rounded, color: Colors.white, size: 14),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text("Let's hunt sugar bugs! 🦠", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ),
-                      
-                      // RIGHT SIDE: Compact Actions (Horizontal)
-                      Row(
+            // 2. SCROLLABLE CONTENT
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  // HEADER (Transparent, sits on top of gradient)
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40), // More breathing room
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center, // Align center vertically
                         children: [
-                          // 🔥 THE CHAT BUTTON
-                          GestureDetector(
-                            onTap: () {
-                              SoundManager.playPop();
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()));
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15), 
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withOpacity(0.3))
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.smart_toy_rounded, color: Colors.white, size: 18),
-                                  SizedBox(width: 6),
-                                  Text("AI Chat", style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                                ],
-                              ),
+                          // LEFT SIDE: Greeting
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: _showEditNameDialog, // ✏️ Tap to edit name
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Flexible(
+                                        child: Text('${'hi'.tr()}, $_userName!', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, shadows: [Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))]), overflow: TextOverflow.ellipsis),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                                        child: const Icon(Icons.edit_rounded, color: Colors.white, size: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text('letsHuntSugarBugs'.tr(), style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Image.asset('assets/tooth_logo.png', height: 50), // Logo
+
+                          // RIGHT SIDE: Compact Actions (Horizontal)
+                          Row(
+                            children: [
+                              // 🔥 THE CHAT BUTTON
+                              GestureDetector(
+                                onTap: () {
+                                  SoundManager.playPop();
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: Colors.white.withOpacity(0.3))
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 18),
+                                      const SizedBox(width: 6),
+                                      Text('aiChat'.tr(), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Image.asset('assets/tooth_logo.png', height: 50), // Logo
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // WHITE CONTENT AREA
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: AppColors.background, 
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(35)), // Smoother roundness
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20, offset: Offset(0, -5))] // Depth
-                ),
-                padding: const EdgeInsets.fromLTRB(25, 35, 25, 100), // More top padding inside sheet
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // HERO CARD
-                    _buildHeroCard(rankName, nextRankName, _levelProgress, _level, startRankLvl, nextRankLvl),
-                    const SizedBox(height: 25),
-                    
-                    // MISSION BUTTONS
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // WHITE CONTENT AREA
+                  Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(35)), // Smoother roundness
+                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20, offset: Offset(0, -5))] // Depth
+                    ),
+                    padding: const EdgeInsets.fromLTRB(25, 35, 25, 100), // More top padding inside sheet
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('My Missions 📝', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
-                        FadeTransition(opacity: _fadeAnimation, child: const Text("Tick everyday! 👇", style: TextStyle(fontSize: 12, color: Colors.deepOrange, fontWeight: FontWeight.bold))),
+                        // HERO CARD
+                        _buildHeroCard(rankName, nextRankName, _levelProgress, _level, startRankLvl, nextRankLvl),
+                        const SizedBox(height: 25),
+
+                        // MISSION BUTTONS
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${'myMissions'.tr()} 📝', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
+                            FadeTransition(opacity: _fadeAnimation, child: Text("${'tickEveryday'.tr()} 👇", style: const TextStyle(fontSize: 12, color: Colors.deepOrange, fontWeight: FontWeight.bold))),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(children: [
+                          _buildMissionToggle("${'morning'.tr()}\n${'brush'.tr()}", Icons.wb_sunny_rounded, _morningBrush, 'morning_brush', const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), Colors.orange),
+                          const SizedBox(width: 15),
+                          _buildMissionToggle("${'night'.tr()}\n${'brush'.tr()}", Icons.bedtime_rounded, _nightBrush, 'night_brush', const LinearGradient(colors: [Color(0xFF9FA8DA), Color(0xFF3F51B5)]), Colors.indigo),
+                        ]),
+
+                        const SizedBox(height: 25),
+                        Text('${'threeDMagicCamera'.tr()} ✨', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
+                        const SizedBox(height: 12),
+                        _buildARCard(),
+
+                        const SizedBox(height: 25),
+                        Text('${'myTrophies'.tr()} 🏆', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
+                        const SizedBox(height: 12),
+                        _buildTrophyRow(),
+
+                        const SizedBox(height: 25),
+                        Text('${'dailyDiscovery'.tr()} 💡', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
+                        const SizedBox(height: 12),
+                        _buildDiscoveryCard(),
+
+                        const SizedBox(height: 40),
+                        // 🏥 CLIENT BRANDING FOOTER
+                        Center(
+                          child: Text(
+                            'madeWithLove'.tr(),
+                            style: TextStyle(color: Colors.grey[400], fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Row(children: [
-                      _buildMissionToggle("Morning\nBrush", Icons.wb_sunny_rounded, _morningBrush, 'morning_brush', const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), Colors.orange),
-                      const SizedBox(width: 15),
-                      _buildMissionToggle("Night\nBrush", Icons.bedtime_rounded, _nightBrush, 'night_brush', const LinearGradient(colors: [Color(0xFF9FA8DA), Color(0xFF3F51B5)]), Colors.indigo),
-                    ]),
-                    
-                    const SizedBox(height: 25),
-                    const Text('3D Magic Camera ✨', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
-                    const SizedBox(height: 12),
-                    _buildARCard(),
-                    
-                    const SizedBox(height: 25),
-                    const Text('My Trophies 🏆', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
-                    const SizedBox(height: 12),
-                    _buildTrophyRow(),
-                    
-                    const SizedBox(height: 25),
-                    const Text('Daily Discovery 💡', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.darkText)),
-                    const SizedBox(height: 12),
-                    _buildDiscoveryCard(),
-                    
-                    const SizedBox(height: 40),
-                    // 🏥 CLIENT BRANDING FOOTER
-                    Center(
-                      child: Text(
-                        "Made with ❤️ for Klinik Pergigian Dr. Karthi",
-                        style: TextStyle(color: Colors.grey[400], fontSize: 10, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        
-        // 3. CONFETTI (Top Layer)
-        Align(alignment: Alignment.topCenter, child: ConfettiWidget(confettiController: _confettiController, blastDirectionality: BlastDirectionality.explosive, shouldLoop: false, colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange])),
-      ],
-    );
+            ),
+
+            // 3. CONFETTI (Top Layer)
+            Align(alignment: Alignment.topCenter, child: ConfettiWidget(confettiController: _confettiController, blastDirectionality: BlastDirectionality.explosive, shouldLoop: false, colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange])),
+          ],
+        );
   }
 
   // --- WIDGETS ---
@@ -634,7 +637,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
           Text(rank, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.darkText)),
           Text(_userName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey)),
           const SizedBox(height: 5),
-          Text("Next: $nextRank (Lvl $nextRankLvl)", style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+          Text("${'next'.tr()}: $nextRank (Lvl $nextRankLvl)", style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           
           // 🔥 FIXED: Use the new rankProgress here
@@ -644,13 +647,13 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
           
           GestureDetector(
             onTap: () { SoundManager.playPop(); _showXPInfo(); },
-            child: const Text("(Tap to see your Rank 👆)", style: TextStyle(fontSize: 10, color: Colors.blueGrey, fontStyle: FontStyle.italic)),
+            child: Text('tapToSeeYourRank'.tr(), style: const TextStyle(fontSize: 10, color: Colors.blueGrey, fontStyle: FontStyle.italic)),
           ),
           
           const SizedBox(height: 5),
           GestureDetector(
             onTap: () { SoundManager.playPop(); _showStreakInfo(); },
-            child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 16), const SizedBox(width: 5), Text("$_streak Day Streak!", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 12))])),
+            child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 16), const SizedBox(width: 5), Text('dayStreak'.tr(namedArgs: {'count': '$_streak'}), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 12))])),
           ),
         ])),
       ]),
@@ -660,8 +663,8 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
   Widget _buildMissionToggle(String title, IconData icon, bool done, String key, Gradient activeGradient, Color iconColor) {
     return Expanded(
       child: GestureDetector(
-        onTap: done 
-          ? () { SoundManager.playPop(); _showFloatingSnackBar("Good job! You already did this today. 👍"); } 
+        onTap: done
+          ? () { SoundManager.playPop(); _showFloatingSnackBar("${'goodJob'.tr()}! ${'alreadyDidThisToday'.tr()} 👍"); }
           : () => _completeMission(key),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
@@ -681,10 +684,10 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
   Widget _buildTrophyRow() {
     return SizedBox(height: 110, child: ListView(scrollDirection: Axis.horizontal, children: [
-      _buildBadge("Early Bird", Icons.wb_sunny_rounded, _morningBrush, Colors.orange, "Brush your teeth in the morning!"),
-      _buildBadge("Night Owl", Icons.bedtime_rounded, _nightBrush, Colors.indigo, "Brush your teeth before sleeping!"),
-      _buildBadge("Plaque Protector", Icons.verified_rounded, _level >= 5, Colors.red, "Reach Level 5 to unlock!"), 
-      _buildBadge("Tooth Genius", Icons.school_rounded, _lessonsCompleted >= 13, Colors.green, "Finish all 13 lessons!", "$_lessonsCompleted/13"), 
+      _buildBadge("Early Bird", Icons.wb_sunny_rounded, _morningBrush, Colors.orange, 'brushTeethMorning'.tr()),
+      _buildBadge("Night Owl", Icons.bedtime_rounded, _nightBrush, Colors.indigo, 'brushTeethNight'.tr()),
+      _buildBadge("Plaque Protector", Icons.verified_rounded, _level >= 5, Colors.red, 'reachLevel5'.tr()),
+      _buildBadge("Tooth Genius", Icons.school_rounded, _lessonsCompleted >= 13, Colors.green, 'finishAllLessons'.tr(), "$_lessonsCompleted/13"),
     ]));
   }
 
