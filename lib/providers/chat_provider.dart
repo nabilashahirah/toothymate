@@ -40,9 +40,20 @@ class ChatProvider extends ChangeNotifier {
     await _geminiService.init();
     await _ttsService.init();
     await _loadChatHistory();
-    
+
     if (_messages.isEmpty) {
-       _messages.add({'sender': 'bot', 'text': 'Hello! I am Dr. Tooth Bot 🤖 from Klinik Pergigian Dr. Karthi!\n\nI have emotions! try saying "Pain" or "Candy" to see my face change!'});
+      // Get current language from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final currentLocale = prefs.getString('app_locale') ?? 'en';
+
+      // Set TTS language
+      await _ttsService.setLanguage(currentLocale);
+
+      final greetingText = currentLocale == 'ms'
+          ? 'Hai! Saya Dr. Tooth Bot 🤖 dari Klinik Pergigian Dr. Karthi!\n\nSaya ada emosi! cuba cakap "Sakit" atau "Gula" untuk lihat muka saya berubah!'
+          : 'Hello! I am Dr. Tooth Bot 🤖 from Klinik Pergigian Dr. Karthi!\n\nI have emotions! try saying "Pain" or "Candy" to see my face change!';
+
+       _messages.add({'sender': 'bot', 'text': greetingText});
        notifyListeners();
     }
 
@@ -101,21 +112,36 @@ class ChatProvider extends ChangeNotifier {
     if (response == null) {
       if (_geminiService.isReady) {
         try {
-          const persona = "You are Dr. Tooth Bot, a friendly, energetic dentist assistant for kids. "
-              "Keep answers short (max 2 sentences), simple, and use lots of emojis! 🦷✨. "
-              "If asked about the clinic, say 'Dr. Karthi is the best!'. "
-              "IMPORTANT: If asked about anything dangerous, scary, or not related to teeth/health, say 'I only know about teeth and smiles! 😁'.";
-          
+          // Get current language
+          final prefs = await SharedPreferences.getInstance();
+          final currentLocale = prefs.getString('app_locale') ?? 'en';
+
+          final persona = currentLocale == 'ms'
+              ? "Anda adalah Dr. Tooth Bot, pembantu doktor gigi yang mesra dan bertenaga untuk kanak-kanak. "
+                  "Jawapan mesti PENDEK (maksimum 2 ayat), mudah, dan guna banyak emoji! 🦷✨. "
+                  "Jika ditanya tentang klinik, cakap 'Dr. Karthi yang terbaik!'. "
+                  "PENTING: Jika ditanya tentang perkara berbahaya, menakutkan, atau tidak berkaitan dengan gigi/kesihatan, cakap 'Saya hanya tahu tentang gigi dan senyuman! 😁'."
+              : "You are Dr. Tooth Bot, a friendly, energetic dentist assistant for kids. "
+                  "Keep answers short (max 2 sentences), simple, and use lots of emojis! 🦷✨. "
+                  "If asked about the clinic, say 'Dr. Karthi is the best!'. "
+                  "IMPORTANT: If asked about anything dangerous, scary, or not related to teeth/health, say 'I only know about teeth and smiles! 😁'.";
+
           final content = [Content.text("$persona\n\nUser: $text")];
           final apiResponse = await _geminiService.generateContent(content);
-          response = apiResponse.text ?? "I'm not sure, but remember to brush twice a day! 🪥";
+          response = apiResponse.text ?? (currentLocale == 'ms'
+              ? "Saya tak pasti, tapi ingat gosok gigi 2 kali sehari! 🪥"
+              : "I'm not sure, but remember to brush twice a day! 🪥");
         } catch (e) {
           debugPrint("Gemini Error: $e");
-          response = "Oh no! I can't reach my brain cloud ☁️. Please check your internet connection! 📶";
+          final prefs = await SharedPreferences.getInstance();
+          final currentLocale = prefs.getString('app_locale') ?? 'en';
+          response = currentLocale == 'ms'
+              ? "Oh tidak! Saya tak boleh hubungi cloud otak saya ☁️. Sila semak sambungan internet! 📶"
+              : "Oh no! I can't reach my brain cloud ☁️. Please check your internet connection! 📶";
         }
       } else {
-        response = _geminiService.error != null 
-            ? "⚠️ System Error: ${_geminiService.error}" 
+        response = _geminiService.error != null
+            ? "⚠️ System Error: ${_geminiService.error}"
             : "I'm still waking up! 😴 Try again in a second.";
       }
     }
@@ -125,15 +151,28 @@ class ChatProvider extends ChangeNotifier {
     _messages.add({'sender': 'bot', 'text': response});
     notifyListeners();
     _saveChatHistory();
-    
+
     _playSound('audio/pop.mp3');
-    _ttsService.speak(response);
+
+    // Get language and speak with correct voice
+    final prefs = await SharedPreferences.getInstance();
+    final currentLocale = prefs.getString('app_locale') ?? 'en';
+    await _ttsService.speak(response, languageCode: currentLocale);
   }
 
-  void clearChat() {
+  Future<void> clearChat() async {
     _ttsService.stop();
     _messages.clear();
-    _messages.add({'sender': 'bot', 'text': 'Hello! I am Dr. Tooth Bot 🤖 from Klinik Pergigian Dr. Karthi!\n\nI have emotions! try saying "Pain" or "Candy" to see my face change!'});
+
+    // Get current language
+    final prefs = await SharedPreferences.getInstance();
+    final currentLocale = prefs.getString('app_locale') ?? 'en';
+
+    final greetingText = currentLocale == 'ms'
+        ? 'Hai! Saya Dr. Tooth Bot 🤖 dari Klinik Pergigian Dr. Karthi!\n\nSaya ada emosi! cuba cakap "Sakit" atau "Gula" untuk lihat muka saya berubah!'
+        : 'Hello! I am Dr. Tooth Bot 🤖 from Klinik Pergigian Dr. Karthi!\n\nI have emotions! try saying "Pain" or "Candy" to see my face change!';
+
+    _messages.add({'sender': 'bot', 'text': greetingText});
     _botIcon = Icons.smart_toy_rounded;
     notifyListeners();
     _saveChatHistory();

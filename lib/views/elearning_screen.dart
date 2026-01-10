@@ -350,7 +350,7 @@ class _LessonScreenState extends State<LessonScreen> {
     List<String> done = prefs.getStringList('completed_lessons') ?? [];
     if (!done.contains(widget.lesson.id)) { done.add(widget.lesson.id); await prefs.setStringList('completed_lessons', done); }
     _confetti.play(); sfx.play(AssetSource('audio/yahoo.mp3'));
-    if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("heroProgressSaved".tr()), backgroundColor: Colors.green));
+    if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("heroProgressSaved".tr()), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating, margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 20)));
   }
 
   void _toggleTimer() async {

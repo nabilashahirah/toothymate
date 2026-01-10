@@ -350,8 +350,12 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(fontWeight: FontWeight.bold)),
-        behavior: SnackBarBehavior.floating, 
-        margin: const EdgeInsets.all(20),   
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + 10,
+          left: 20,
+          right: 20,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         backgroundColor: AppColors.accentOrange,
         duration: const Duration(seconds: 2),
