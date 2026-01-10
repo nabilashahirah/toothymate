@@ -34,7 +34,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      key: ValueKey(context.locale.toString()),
       debugShowCheckedModeBanner: false,
       title: 'ToothyMate',
       localizationsDelegates: context.localizationDelegates,
