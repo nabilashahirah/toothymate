@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart'; // Add this
 import 'package:shared_preferences/shared_preferences.dart';
@@ -155,47 +157,10 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
   int _streak = 0;
   int _lessonsCompleted = 0;
 
-  //  Mixed List for Shuffling (Videos, Myths, Facts)
-  final List<Lesson> _discoveryLessons = [
-    Lesson(
-      id: "5",
-      category: "Video",
-      title: "The 2-Minute Groove! 💃",
-      subtitle: "Watch: Brushing like a champion",
-      image: "assets/elearning/brushteeth.png",
-      videoUrl: "https://youtu.be/CmZp1wdJAw4?si=Q57U1KdjedGkdN0j",
-      content: "Ready to dance with your toothbrush? 🪥✨\n\n**Learn the 3 Magic Moves:**\n1. **Small Circles:** Move your brush like a tiny Ferris wheel 🎡.\n2. **The 45-Degree Tilt:** Aim at the gum line where germs hide!\n3. **The Tongue Tickle:** Brush your tongue for super fresh breath! 👅\n\n📺 **Tap Play to start your training!**",
-    ),
-    Lesson(
-      id: "9",
-      category: "Video",
-      title: "The Flossing Thread Trick 🧵",
-      subtitle: "Watch: Cleaning between the 'Hero Team'",
-      image: "assets/elearning/floss.png",
-      videoUrl: "https://youtu.be/VsgSLYWx5-0?si=btSSC-xrNk_vKvAw",
-      content: "Toothbrushes can't reach everywhere! That's where **Floss** comes in. 🕵️‍♂️\n\n**What to watch for:**\n• **The 'C' Shape:** Wrap the floss around the tooth like a hug 🤗.\n• **Up and Down:** Gently slide it under the gum line.\n• **Fresh Spot:** Use a clean piece of thread for every tooth!\n\n📺 **Watch carefully and try it tonight!**",
-    ),
-    Lesson(
-      id: "3",
-      category: "Myth",
-      title: "The Sugar Monster Myth 👹",
-      subtitle: "Myth vs. Fact: Is candy the only villain?",
-      image: "assets/elearning/candy.png",
-      videoUrl: "",
-      content: "Is candy the only thing that causes cavities? Let's find out! 🕵️‍♂️\n\n❌ **The Myth:** \"If I don't eat candy, I won't get cavities!\"\n✅ **The Fact:** Sticky foods like **crackers, bread, and dried fruit** can stay on your teeth longer than chocolate! 🥨 Bacteria turn these starches into acid just like sugar.\n\n🎯 **Mini Challenge:** Can you name one healthy snack that isn't sticky? 🍎",
-    ),
-    Lesson(
-      id: "1",
-      category: "Core",
-      title: "Meet Your Teeth!",
-      subtitle: "Discover your smile heroes 😁",
-      image: "assets/elearning/teeth_type.jpg",
-      videoUrl: "",
-      content: "🦷 Hey Tooth Hero! Did you know your **teeth** are like a superhero team inside your mouth?\n\nLet’s meet them 👇\n\n• **Incisors** – Front teeth that **cut food** like scissors ✂️\n• **Canines** – The Tigers! 🐯 Sharp teeth that **tear food** like a tiger 🐯\n• **Premolars** – The Crushers! 🍪 Strong teeth that **crush snacks**\n• **Molars** – Big back teeth that **grind food** into tiny pieces 🥦\n\nInside every tooth, there are 3 important parts:\n• **Enamel** – The hard outer shield 🛡️\n• **Dentin** – The strong layer under enamel\n• **Pulp** – The soft center where nerves live ⚡\n\n💡 **Why this matters:** Healthy teeth help you eat, talk, and smile with confidence!\n🎯 **Mini Challenge:** Can you count how many teeth you have today? 😄\n🤖 *AI link:* AI checks these teeth to see if they are healthy or not.",
-    ),
-  ];
-
-  late Lesson _featuredLesson = _discoveryLessons[Random().nextInt(_discoveryLessons.length)];
+  //  Mixed List for Shuffling (Videos, Myths, Facts) - loaded from JSON
+  List<Lesson> _discoveryLessons = [];
+  Lesson? _featuredLesson;
+  Locale? _currentLocale;
 
   @override
   void initState() {
@@ -203,7 +168,47 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
     _confettiController = ConfettiController(duration: const Duration(seconds: 2));
     _hintController = AnimationController(duration: const Duration(seconds: 1), vsync: this)..repeat(reverse: true);
     _fadeAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(_hintController);
-    _checkNewDayAndLoad(); 
+    _loadLessons();
+    _checkNewDayAndLoad();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload lessons if locale changed
+    final locale = context.locale;
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      _loadLessons();
+    }
+  }
+
+  Future<void> _loadLessons() async {
+    try {
+      // Load lessons based on current locale
+      final String locale = context.locale.languageCode;
+      final String fileName = locale == 'ms' ? 'assets/json/lessons_ms.json' : 'assets/json/lessons_en.json';
+
+      final String jsonString = await rootBundle.loadString(fileName);
+      final List<dynamic> jsonList = json.decode(jsonString);
+
+      final allLessons = jsonList.map((json) => Lesson.fromJson(json)).toList();
+
+      // Filter for featured lessons (Videos, Myths, Core)
+      _discoveryLessons = allLessons.where((lesson) =>
+        lesson.category == "Video" ||
+        lesson.category == "Myth" ||
+        lesson.id == "1" // "Meet Your Teeth"
+      ).toList();
+
+      if (_discoveryLessons.isNotEmpty && mounted) {
+        setState(() {
+          _featuredLesson = _discoveryLessons[Random().nextInt(_discoveryLessons.length)];
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading lessons: $e');
+    }
   }
 
   @override
@@ -254,6 +259,9 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       List<String> finishedLessons = prefs.getStringList('completed_lessons') ?? [];
       _lessonsCompleted = finishedLessons.length;
     });
+
+    // Reload lessons when data is refreshed (e.g., after language change)
+    _loadLessons();
   }
 
   // --- LOGIC: RANKS & LEVELS ---
@@ -712,17 +720,29 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
     return InkWell(
       onTap: () { SoundManager.playPop(); Navigator.push(context, MaterialPageRoute(builder: (_) => const ToothARScreen())); },
       child: Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFF42A5F5), Color(0xFF26C6DA)]), borderRadius: BorderRadius.circular(25)), child: Row(children: [
-        const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text("See Magic Teeth!", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)), Text("Use AR to see inside a tooth", style: TextStyle(color: Colors.white, fontSize: 12))])),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('seeMagicTeeth'.tr(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)), Text('useARToSee'.tr(), style: const TextStyle(color: Colors.white, fontSize: 12))])),
         Image.asset('assets/tooth_AR.png', height: 60, errorBuilder: (c,e,s) => const Icon(Icons.view_in_ar_rounded, color: Colors.white, size: 50)),
       ])),
     );
   }
   
   Widget _buildDiscoveryCard() {
-    String category = _featuredLesson.category;
+    // Return placeholder if lesson not loaded yet
+    if (_featuredLesson == null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF43A047), Color(0xFF66BB6A)]),
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+
+    String category = _featuredLesson!.category;
     bool isVideo = category == "Video";
     bool isMyth = category == "Myth";
-    
+
     // 🎨 Dynamic Colors based on Category (Matches Learning Screen)
     List<Color> gradientColors;
     IconData icon;
@@ -741,12 +761,12 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       icon = Icons.lightbulb_circle_rounded;
       shadowColor = Colors.green;
     }
-    
+
     return InkWell(
       onTap: () {
         SoundManager.playPop();
         // Navigate directly to the specific Lesson
-        Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: _featuredLesson)));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: _featuredLesson!)));
       },
       child: Container(
         padding: const EdgeInsets.all(20),
@@ -755,7 +775,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
           borderRadius: BorderRadius.circular(25),
           boxShadow: [BoxShadow(color: shadowColor.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))],
         ),
-        child: Row(children: [Icon(icon, color: Colors.white, size: 40), const SizedBox(width: 15), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(_featuredLesson.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)), Text(_featuredLesson.subtitle, style: const TextStyle(fontSize: 12, color: Colors.white70))]))]),
+        child: Row(children: [Icon(icon, color: Colors.white, size: 40), const SizedBox(width: 15), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(_featuredLesson!.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)), Text(_featuredLesson!.subtitle, style: const TextStyle(fontSize: 12, color: Colors.white70))]))]),
       ),
     );
   }

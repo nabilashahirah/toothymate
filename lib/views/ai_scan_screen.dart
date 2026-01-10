@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter_tts/flutter_tts.dart'; 
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../providers/ai_scan_provider.dart';
 import '../services/feedback_service.dart';
 import '../services/advice_service.dart';
@@ -31,13 +32,20 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
   }
 
   void _initTts() async {
-    await tts.setLanguage("en-US");
-    await tts.setPitch(1.3); 
+    // Set language based on current locale
+    final locale = context.locale.languageCode;
+    if (locale == 'ms') {
+      await tts.setLanguage("ms-MY"); // Malay (Malaysia)
+    } else {
+      await tts.setLanguage("en-US"); // English (US)
+    }
+
+    await tts.setPitch(1.3);
     await tts.setSpeechRate(0.5);
-    
+
     // Greet the user as soon as the TTS engine is ready
     if (!_hasGreeted) {
-      _speakMascot("Hi there, Hero! I'm ready to scan your smile. Please align your teeth in the box!");
+      _speakMascot('scanGreeting'.tr());
       setState(() => _hasGreeted = true);
     }
   }
@@ -45,6 +53,15 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
   void _speakMascot(String text) async {
     await tts.stop();
     await tts.speak(text);
+  }
+
+  // Helper to translate feedback keys separated by pipe
+  String _translateFeedback(String feedbackKeys) {
+    if (!feedbackKeys.contains('|')) {
+      return feedbackKeys.tr();
+    }
+    final keys = feedbackKeys.split('|');
+    return keys.map((key) => key.tr()).join(' ');
   }
 
   @override
@@ -63,9 +80,10 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
           // Trigger speech when results first appear
           if (provider.results != null && !provider.isProcessing) {
             Future.delayed(const Duration(milliseconds: 500), () {
-              String feedback = FeedbackService.getFeedback(provider.results);
+              String feedbackKey = FeedbackService.getFeedback(provider.results);
+              String feedback = _translateFeedback(feedbackKey);
               final advice = AdviceService.getAdviceList(provider.results!);
-              String adviceText = advice.isNotEmpty ? "My advice is: ${advice[0]['advice']}" : "";
+              String adviceText = advice.isNotEmpty ? "${'myAdviceIs'.tr()}: ${advice[0]['adviceKey']!.tr()}" : "";
               _speakMascot("$feedback. $adviceText");
             });
           }
@@ -81,7 +99,7 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
                   gradient: LinearGradient(colors: [Color(0xFF33D4FF), Color(0xFF0F82EB)]),
                 ),
               ),
-              title: const Text('ToothyScan AI', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              title: Text('toothyScanAI'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               actions: [
                 if (provider.selectedImage != null || provider.results != null)
                   IconButton(
@@ -89,7 +107,7 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
                     onPressed: () {
                       tts.stop();
                       provider.resetScan();
-                      _speakMascot("Let's try again! Ready when you are.");
+                      _speakMascot('tryAgainMessage'.tr());
                     },
                   )
               ],
@@ -135,9 +153,11 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
                           ),
                           child: provider.isProcessing
                               ? const Center(child: CircularProgressIndicator())
-                              : provider.results != null 
-                                  ? _buildAnalysisView(context, provider) 
-                                  : _buildIdleView(),
+                              : provider.errorMessage != null
+                                  ? _buildErrorView(context, provider)
+                                  : provider.results != null
+                                      ? _buildAnalysisView(context, provider)
+                                      : _buildIdleView(),
                         ),
                       ),
                       _buildBottomButtons(provider),
@@ -180,7 +200,7 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
               border: Border.all(color: Colors.white54, width: 2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(child: Text("Align Tooth Here", style: TextStyle(color: Colors.white70))),
+            child: Center(child: Text('alignToothHere'.tr(), style: const TextStyle(color: Colors.white70))),
           ),
           AnimatedBuilder(
             animation: _animationController,
@@ -216,11 +236,12 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Analysis Report", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F82EB))),
+              Text('analysisReport'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F82EB))),
               IconButton(
                 icon: const Icon(Icons.volume_up, color: Color(0xFF33D4FF)),
                 onPressed: () {
-                  String feedback = FeedbackService.getFeedback(provider.results);
+                  String feedbackKey = FeedbackService.getFeedback(provider.results);
+                  String feedback = _translateFeedback(feedbackKey);
                   _speakMascot(feedback);
                 },
               )
@@ -231,13 +252,13 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
           if (target != null)
             _buildLearnMoreCard(context, target),
 
-          Text(FeedbackService.getFeedback(provider.results), style: const TextStyle(fontSize: 15)),
+          Text(_translateFeedback(FeedbackService.getFeedback(provider.results)), style: const TextStyle(fontSize: 15)),
           const SizedBox(height: 15),
 
           ...provider.results!.entries.map((e) => _buildBar(e.key, e.value)),
 
           const Divider(height: 30),
-          const Text("Hero's Advice:", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F82EB))),
+          Text('herosAdvice'.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F82EB))),
           const SizedBox(height: 10),
           ...adviceItems.map((item) => Padding(
             padding: const EdgeInsets.only(bottom: 6),
@@ -246,7 +267,7 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
               children: [
                 const Icon(Icons.check_circle, color: Colors.green, size: 16),
                 const SizedBox(width: 8),
-                Expanded(child: Text(item['advice']!, style: const TextStyle(fontSize: 13))),
+                Expanded(child: Text(item['adviceKey']!.tr(), style: const TextStyle(fontSize: 13))),
               ],
             ),
           )),
@@ -268,16 +289,60 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
         children: [
           const Icon(Icons.school, color: Colors.orange),
           const SizedBox(width: 10),
-          Expanded(child: Text("New Lesson: $lessonName!", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+          Expanded(child: Text("${'newLesson'.tr()}: $lessonName!", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
           ElevatedButton(
             onPressed: () {
               tts.stop();
               Navigator.push(context, MaterialPageRoute(builder: (context) => ElearningScreen(initialSearch: lessonName)));
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text("Study", style: TextStyle(color: Colors.white, fontSize: 12)),
+            child: Text('study'.tr(), style: const TextStyle(color: Colors.white, fontSize: 12)),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildErrorView(BuildContext context, AiScanProvider provider) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 80,
+              color: Colors.red[300],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              provider.errorMessage!.tr(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                provider.resetScan();
+              },
+              icon: const Icon(Icons.refresh),
+              label: Text('tryAgain'.tr()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0F82EB),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -286,15 +351,15 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text("Take a clear photo of your teeth.", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SizedBox(height: 12),
+        children: [
+          Text('takeClearPhoto'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              "This AI scan checks for plaque, stains, cavities, and healthy teeth for awareness purposes only.",
+              'aiScanDisclaimer'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
+              style: const TextStyle(fontSize: 12, color: Colors.grey, height: 1.4),
             ),
           ),
         ],
@@ -327,7 +392,7 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F82EB), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
               onPressed: provider.capturePhoto,
-              icon: const Icon(Icons.camera_alt), label: const Text("Capture Scan"),
+              icon: const Icon(Icons.camera_alt), label: Text('captureScan'.tr()),
             ),
           ),
           const SizedBox(width: 12),
@@ -338,14 +403,14 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
   }
 
   Widget _buildProcessingOverlay() => Container(
-    color: Colors.black54, 
-    child: const Center(
+    color: Colors.black54,
+    child: Center(
       child: Column(
-        mainAxisSize: MainAxisSize.min, 
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: Colors.white), 
-          SizedBox(height: 15), 
-          Text("AI is checking your teeth...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
+          const CircularProgressIndicator(color: Colors.white),
+          const SizedBox(height: 15),
+          Text('aiCheckingTeeth'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
         ]
       )
     )

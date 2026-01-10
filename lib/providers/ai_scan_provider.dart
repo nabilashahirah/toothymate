@@ -14,15 +14,18 @@ class AiScanProvider extends ChangeNotifier {
   // State
   File? _selectedImage;
   File? get selectedImage => _selectedImage;
-  
+
   Map<String, double>? _results;
   Map<String, double>? get results => _results;
-  
+
   bool _isProcessing = false;
   bool get isProcessing => _isProcessing;
-  
+
   bool _isReady = false;
   bool get isReady => _isReady;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   AiScanProvider() {
     _aiService = AiService();
@@ -36,10 +39,12 @@ class AiScanProvider extends ChangeNotifier {
       await _aiService.loadModel();
       await _cameraService.initialize();
       _isReady = true;
+      _errorMessage = null;
       notifyListeners();
     } catch (e) {
       // Handle initialization error
       _isReady = false;
+      _errorMessage = 'aiInitError'; // Translation key
       notifyListeners();
     }
   }
@@ -52,6 +57,7 @@ class AiScanProvider extends ChangeNotifier {
     _selectedImage = file;
     _isProcessing = true;
     _results = null;
+    _errorMessage = null;
     notifyListeners();
 
     await _runInference(file);
@@ -65,6 +71,7 @@ class AiScanProvider extends ChangeNotifier {
     _selectedImage = file;
     _isProcessing = true;
     _results = null;
+    _errorMessage = null;
     notifyListeners();
 
     await _runInference(file);
@@ -73,20 +80,35 @@ class AiScanProvider extends ChangeNotifier {
   Future<void> _runInference(File image) async {
     _isProcessing = true;
     _results = null;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       final results = await _aiService.runInference(image);
       _results = results;
+      _errorMessage = null;
     } catch (e) {
-      // Check if it's a no teeth detected exception to handle differently
+      // Handle different types of errors with translation keys
       if (e is NoTeethDetectedException) {
         // Set a special result to indicate no teeth detected
         _results = {'no_teeth_detected': 100.0};
-        // Don't rethrow for this specific case - just update the UI
+        _errorMessage = null;
+      } else if (e is AiNotLoadedException) {
+        // AI model not loaded
+        _results = null;
+        _errorMessage = 'aiModelNotLoaded';
+      } else if (e is InvalidImageException) {
+        // Invalid image format
+        _results = null;
+        _errorMessage = 'invalidImage';
+      } else if (e is AiInferenceException) {
+        // Inference failed
+        _results = null;
+        _errorMessage = 'aiInferenceFailed';
       } else {
-        // For other errors, you might want to set an error state
-        // Or handle differently based on your needs
+        // Unknown error
+        _results = null;
+        _errorMessage = 'unexpectedError';
       }
     } finally {
       _isProcessing = false;
@@ -97,6 +119,7 @@ class AiScanProvider extends ChangeNotifier {
   void resetScan() {
     _selectedImage = null;
     _results = null;
+    _errorMessage = null;
     notifyListeners();
   }
 
