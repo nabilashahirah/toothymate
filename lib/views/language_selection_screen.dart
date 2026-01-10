@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toothymate_app_4/views/welcome_screens.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
@@ -84,7 +85,13 @@ class LanguageSelectionScreen extends StatelessWidget {
       height: 60,
       child: ElevatedButton(
         onPressed: () async {
+          // Set locale
           await context.setLocale(locale);
+
+          // Save language preference
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('app_locale', locale.languageCode);
+
           // Navigate to Onboarding Screen
           if (context.mounted) {
              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const OnboardingScreen()));

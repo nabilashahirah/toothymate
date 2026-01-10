@@ -449,8 +449,14 @@ class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
                 child: SizedBox(
                   height: 65,
                   child: ElevatedButton(
-                    onPressed: () {
-                      SoundManager.playPop(); 
+                    onPressed: () async {
+                      SoundManager.playPop();
+
+                      // Mark onboarding as complete
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('onboarding_complete', true);
+
+                      if (!context.mounted) return;
                       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
                     },
                     style: ElevatedButton.styleFrom(

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // --- THEME COLORS (Synced with Home Screen) ---
 class AppColors {
@@ -40,7 +41,9 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    // Use locale as key to force rebuild when language changes
     return Scaffold(
+      key: ValueKey(context.locale.languageCode),
       backgroundColor: AppColors.background,
       appBar: AppBar(
         flexibleSpace: Container(
@@ -89,7 +92,10 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
               ),
               const SizedBox(height: 30),
 
-              // --- 2. WHAT WE DO ---
+              // --- 2. LANGUAGE SELECTOR ---
+              const _LanguageSelector(),
+
+              // --- 3. WHAT WE DO ---
               _InfoCard(
                 title: 'ourMission'.tr(),
                 content: 'ourMissionContent'.tr(),
@@ -97,7 +103,7 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
                 iconColor: Colors.pinkAccent,
               ),
 
-              // --- 3. TECH STACK ---
+              // --- 4. TECH STACK ---
               _InfoCard(
                 title: 'techMagic'.tr(),
                 content: 'techMagicContent'.tr(),
@@ -105,14 +111,193 @@ class _AboutScreenState extends State<AboutScreen> with SingleTickerProviderStat
                 iconColor: Colors.purpleAccent,
               ),
 
-              // --- 4. TEAM CARD ---
+              // --- 5. TEAM CARD ---
               const _TeamCard(),
 
-              // --- 5. VERSION ---
+              // --- 6. VERSION ---
               const _VersionInfo(),
               const SizedBox(height: 50), // Bottom padding
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// -------------------------------------------------------------------
+
+// --- Helper Widget for Language Selector ---
+class _LanguageSelector extends StatelessWidget {
+  const _LanguageSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    final currentLocale = context.locale;
+    final isEnglish = currentLocale.languageCode == 'en';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF42A5F5), Color(0xFF1976D2)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.language_rounded, color: Colors.white, size: 24),
+                  ),
+                  const SizedBox(width: 15),
+                  Text(
+                    'language'.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: _LanguageButton(
+                      label: 'English',
+                      flag: '🇺🇸',
+                      isSelected: isEnglish,
+                      onTap: () async {
+                        await context.setLocale(const Locale('en'));
+
+                        // Save language preference
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('app_locale', 'en');
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('languageChanged'.tr()),
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _LanguageButton(
+                      label: 'Bahasa Melayu',
+                      flag: '🇲🇾',
+                      isSelected: !isEnglish,
+                      onTap: () async {
+                        await context.setLocale(const Locale('ms'));
+
+                        // Save language preference
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('app_locale', 'ms');
+
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('languageChanged'.tr()),
+                              duration: const Duration(seconds: 2),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageButton extends StatelessWidget {
+  final String label;
+  final String flag;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _LanguageButton({
+    required this.label,
+    required this.flag,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? Colors.white : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              flag,
+              style: const TextStyle(fontSize: 28),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? AppColors.primaryDarkBlue : Colors.white,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (isSelected)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Icon(
+                  Icons.check_circle,
+                  color: AppColors.primaryDarkBlue,
+                  size: 16,
+                ),
+              ),
+          ],
         ),
       ),
     );

@@ -53,7 +53,8 @@ dependencies:
   youtube_player_flutter: ^9.1.1
   google_generative_ai: ^0.4.5
   flutter_dotenv: ^5.1.0
-  http: ^1.2.0  # Add this
+  http: ^1.2.0
+  lottie: ^3.1.0  # For animated splash screen
 
   #AR Punya 
   ar_flutter_plugin: any
@@ -78,6 +79,7 @@ flutter:
     - assets/tooth_edu.png
     - assets/tooth_AR.png
     - assets/tooth_scan.png
+    - assets/animation/tooth_animation.json
     - assets/models/toothymate_classifier.tflite
     - assets/models/tooth.glb
     - assets/models/info_icon.glb

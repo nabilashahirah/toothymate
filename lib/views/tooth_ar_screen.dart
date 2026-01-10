@@ -42,10 +42,10 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
   
   // 🎮 Gamification: Track discovered cases
   Set<int> _discoveredCases = {};
-  
-  // 🎯 Tutorial: Show pulsing arrow pointing to buttons
-  bool _showTutorial = true;
-  bool _showGestureTutorial = true; // 🔥 NEW: Show gesture hints
+
+  // 🎯 Tutorial: Show tutorials in sequence
+  bool _showTutorial = false; // Will show after gesture tutorial
+  bool _showGestureTutorial = true; // Shows first when object is placed
   
   // 🎉 Confetti controller
   late ConfettiController _confettiController;
@@ -243,6 +243,8 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
     setState(() {
       _isObjectPlaced = false;
       _discoveredCases.clear();
+      _showGestureTutorial = true; // Reset to show gesture tutorial first
+      _showTutorial = false; // Hide tap dots tutorial
       _debugStatus = 'pointCameraFlat'.tr();
     });
 
@@ -379,7 +381,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
             ),
           ),
 
-          // 🔥 Gesture tutorial overlay
+          // 🔥 Gesture tutorial overlay (shows first)
           if (_isObjectPlaced && _showGestureTutorial)
             Positioned(
               top: 100,
@@ -389,6 +391,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                 onTap: () {
                   setState(() {
                     _showGestureTutorial = false;
+                    _showTutorial = true; // Show tap dots instruction after gesture tutorial
                   });
                 },
                 child: Container(
@@ -471,6 +474,66 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 15),
+
+                    // 🎯 "Tap the dots" tutorial (shows after gesture tutorial)
+                    if (_showTutorial && !_showGestureTutorial)
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber.withOpacity(0.5),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showTutorial = false;
+                            });
+                          },
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.touch_app, color: Colors.white, size: 32),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'tapButtonsBelow'.tr(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'tapToDismiss'.tr(),
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (_showTutorial && !_showGestureTutorial)
+                      const SizedBox(height: 12),
+
                     // Progress tracker banner
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -672,7 +735,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                                         Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 4),
                                           child: Text(
-                                            dentalCases[index]['title']!.split(' ')[0],
+                                            dentalCases[index]['titleKey']!.tr().split(' ')[0],
                                             style: const TextStyle(
                                               color: Colors.white70,
                                               fontSize: 9,

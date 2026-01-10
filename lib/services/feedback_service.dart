@@ -2,31 +2,33 @@ import 'package:flutter/material.dart';
 import '../config/app_config.dart';
 
 class FeedbackService {
+  // Returns translation key for feedback message
   static String getFeedback(Map<String, double>? results) {
-    if (results == null) return "No analysis yet";
+    if (results == null) return "noAnalysisYet";
 
     // Check if no teeth were detected
     if (results.containsKey('no_teeth_detected')) {
-      return "No teeth detected in the image. Please take a clear photo of your teeth.";
+      return "noTeethDetectedFeedback";
     }
 
     List<String> messages = [];
 
     if (results['Calculus'] != null && results['Calculus']! > AppConfig.calculusDetectionThreshold) {
-      messages.add("Mild plaque detected.");
+      messages.add("mildPlaqueDetected");
     }
     if (results['Caries'] != null && results['Caries']! > AppConfig.cariesDetectionThreshold) {
-      messages.add("Possible cavity detected.");
+      messages.add("possibleCavityDetected");
     }
     if (results['Stain'] != null && results['Stain']! > AppConfig.stainDetectionThreshold) {
-      messages.add("Minor staining detected.");
+      messages.add("minorStainingDetected");
     }
     if (results['Healthy_Teeth'] != null && results['Healthy_Teeth']! > AppConfig.healthyTeethDetectionThreshold) {
-      messages.add("Teeth look healthy!");
+      messages.add("teethLookHealthy");
     }
 
-    if (messages.isEmpty) return "Unclear. Retake photo.";
-    return messages.join(" ");
+    if (messages.isEmpty) return "unclearRetakePhoto";
+    // Return combined key - will be translated in UI layer
+    return messages.join("|"); // Use pipe separator for multiple messages
   }
 
   static Color getConditionColor(String label) {

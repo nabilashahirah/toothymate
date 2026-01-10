@@ -4,6 +4,7 @@ class CameraService {
   CameraController? controller;
   List<CameraDescription>? cameras;
   int currentCameraIndex = 0;
+  bool _isCapturing = false;
 
   bool get isInitialized =>
       controller != null && controller!.value.isInitialized;
@@ -34,7 +35,16 @@ class CameraService {
 
   Future<XFile?> capture() async {
     if (!isInitialized) return null;
-    return await controller!.takePicture();
+
+    // Prevent concurrent captures
+    if (_isCapturing) return null;
+
+    try {
+      _isCapturing = true;
+      return await controller!.takePicture();
+    } finally {
+      _isCapturing = false;
+    }
   }
 
   void dispose() {
