@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/ai_scan_provider.dart';
 import '../services/feedback_service.dart';
 import '../services/advice_service.dart';
@@ -32,8 +33,10 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
   }
 
   void _initTts() async {
-    // Set language based on current locale
-    final locale = context.locale.languageCode;
+    // Set language based on saved preference
+    final prefs = await SharedPreferences.getInstance();
+    final locale = prefs.getString('app_locale') ?? 'en';
+
     if (locale == 'ms') {
       await tts.setLanguage("ms-MY"); // Malay (Malaysia)
     } else {
@@ -194,14 +197,55 @@ class _ToothScanScreenState extends State<ToothScanScreen> with SingleTickerProv
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Scanning frame
           Container(
             width: 250, height: 250,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white54, width: 2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Center(child: Text('alignToothHere'.tr(), style: const TextStyle(color: Colors.white70))),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Tooth shape outline
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white30, width: 3),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '🦷',
+                      style: TextStyle(fontSize: 40),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                // Instruction text
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'alignToothHere'.tr(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black54,
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
+          // Animated scanning line
           AnimatedBuilder(
             animation: _animationController,
             builder: (context, child) {

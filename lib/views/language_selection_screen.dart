@@ -85,12 +85,18 @@ class LanguageSelectionScreen extends StatelessWidget {
       height: 60,
       child: ElevatedButton(
         onPressed: () async {
+          // Save language preference first
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('app_locale', locale.languageCode);
+
+          // Store context before async gap
+          if (!context.mounted) return;
+
           // Set locale
           await context.setLocale(locale);
 
-          // Save language preference
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('app_locale', locale.languageCode);
+          // Call the callback to notify parent
+          onLanguageSelected();
 
           // Navigate to Onboarding Screen
           if (context.mounted) {
