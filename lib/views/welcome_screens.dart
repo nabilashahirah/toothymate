@@ -243,6 +243,7 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
           content: Text('oopsForgotName'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         )
       );

@@ -201,6 +201,12 @@ class _LanguageSelector extends StatelessWidget {
                               content: Text('languageChanged'.tr()),
                               duration: const Duration(seconds: 2),
                               backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(
+                                top: MediaQuery.of(context).padding.top + 10,
+                                left: 20,
+                                right: 20,
+                              ),
                             ),
                           );
                         }
@@ -226,6 +232,12 @@ class _LanguageSelector extends StatelessWidget {
                               content: Text('languageChanged'.tr()),
                               duration: const Duration(seconds: 2),
                               backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(
+                                top: MediaQuery.of(context).padding.top + 10,
+                                left: 20,
+                                right: 20,
+                              ),
                             ),
                           );
                         }
