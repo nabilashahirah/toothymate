@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lottie/lottie.dart';
 import '../services/sound_manager.dart'; // Ensure this path matches your folder structure
 import 'home_screen.dart'; 
 
@@ -108,23 +107,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       "body": "onboardingBody1",
       "image": "assets/images/kidbrush.png",
       "deco": "assets/images/question.png",
-      "isLottie": false,
+      "isFeatures": false,
     },
     {
       // Screen 2: How ToothyMate Helps
       "title": "onboardingTitle2",
       "body": "onboardingBody2",
-      "image": "https://lottie.host/c280d579-23e1-47cc-8601-04b9ada10fd2/uNiMyCWj8I.json",
+      "image": "",
       "deco": null,
-      "isLottie": true,
+      "isFeatures": true,
     },
     {
       // Screen 3: Benefits
       "title": "onboardingTitle3",
       "body": "onboardingBody3",
-      "image": "https://lottie.host/60fd91f0-eac4-49d2-8535-e55e0cec4e1f/GcdBccOGtd.json",
+      "image": "assets/images/happykids.png",
       "deco": null,
-      "isLottie": true,
+      "isFeatures": false,
     },
   ];
 
@@ -139,6 +138,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _finishOnboarding() {
     SoundManager.playPop();
     Navigator.push(context, MaterialPageRoute(builder: (context) => const NameInputScreen()));
+  }
+
+  Widget _buildGradientCard({
+    required String imagePath, 
+    required String title, 
+    required String subtitle, 
+    required Gradient gradient
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        gradient: gradient, 
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 8, offset: const Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.25), shape: BoxShape.circle),
+            child: Image.asset(
+              imagePath, 
+              height: 40,
+              width: 40,
+              fit: BoxFit.contain,
+              errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.white, size: 30),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.2, fontWeight: FontWeight.w500)),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -165,73 +208,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemCount: _pages.length,
                   itemBuilder: (context, index) {
                     final page = _pages[index];
+                    final bool isFeatures = page['isFeatures'] == true;
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // --- IMAGE AREA ---
-                          SizedBox(
+                          if (isFeatures)
+                            Column(
+                              children: [
+                                _buildGradientCard(
+                                  imagePath: 'assets/tooth_scan.png',
+                                  title: 'aiToothScanner'.tr(), 
+                                  subtitle: 'findsCavities'.tr(), 
+                                  gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
+                                ),
+                                const SizedBox(height: 10),
+                                _buildGradientCard(
+                                  imagePath: 'assets/tooth_AR.png',
+                                  title: 'threeDMagicModels'.tr(), 
+                                  subtitle: 'seeInsideTooth'.tr(), 
+                                  gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
+                                ),
+                                const SizedBox(height: 10),
+                                _buildGradientCard(
+                                  imagePath: 'assets/tooth_edu.png',
+                                  title: 'smartELearning'.tr(),  
+                                  subtitle: 'includesGames'.tr(), 
+                                  gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
+                                ),
+                              ],
+                            )
+                          else
+                            SizedBox(
                             height: 300,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 // Main Asset
-                                page['isLottie']
-                                  ? Builder(
-                                      builder: (context) {
-                                        String path = page['image'].toString();
-                                        if (path.startsWith('http')) {
-                                          return Lottie.network(
-                                            path,
-                                            height: 250,
-                                            errorBuilder: (c, e, s) => const Icon(Icons.broken_image, color: Colors.white54, size: 60),
-                                          );
-                                        } else {
-                                          return Lottie.asset(
-                                            path,
-                                            height: 250,
-                                            decoder: path.endsWith('.lottie') ? LottieComposition.decodeZip : null,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  const Icon(Icons.broken_image, color: Colors.white54, size: 60),
-                                                  Text("Missing:\n$path", textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                    )
-                                  : Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
+                                Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
                                 
                                 // Deco Asset (if any)
                                 if (page['deco'] != null)
                                   Positioned(
                                     right: 0, top: 0,
-                                    child: page['isLottie']
-                                      ? Builder(
-                                          builder: (context) {
-                                            String path = page['deco'].toString();
-                                            if (path.startsWith('http')) {
-                                              return Lottie.network(
-                                                path,
-                                                height: 80,
-                                                errorBuilder: (c, e, s) => const SizedBox(),
-                                              );
-                                            } else {
-                                              return Lottie.asset(
-                                                path,
-                                                height: 80,
-                                                decoder: path.endsWith('.lottie') ? LottieComposition.decodeZip : null,
-                                                errorBuilder: (c,e,s) => const SizedBox()
-                                              );
-                                            }
-                                          },
-                                        )
-                                      : Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
+                                    child: Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
                                   ),
                               ],
                             ),
@@ -360,7 +383,11 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
       
       if (!mounted) return;
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const FeatureShowcaseScreen()));
+      // Mark onboarding as complete
+      await prefs.setBool('onboarding_complete', true);
+
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
     } else {
       // ❌ JUICE: Shake & Error Sound
       SoundManager.playPop(); 
@@ -452,203 +479,6 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ==========================================
-// 🚀 SCREEN 3: FEATURE SHOWCASE (Colorful & Custom Images!)
-// ==========================================
-class FeatureShowcaseScreen extends StatefulWidget {
-  const FeatureShowcaseScreen({super.key});
-
-  @override
-  State<FeatureShowcaseScreen> createState() => _FeatureShowcaseScreenState();
-}
-
-class _FeatureShowcaseScreenState extends State<FeatureShowcaseScreen> {
-  // Animation Triggers
-  bool _showCard1 = false;
-  bool _showCard2 = false;
-  bool _showCard3 = false;
-  bool _showButton = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAnimations();
-  }
-
-  void _startAnimations() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    if(mounted) setState(() => _showCard1 = true);
-    
-    await Future.delayed(const Duration(milliseconds: 300));
-    if(mounted) setState(() => _showCard2 = true);
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    if(mounted) setState(() => _showCard3 = true);
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    if(mounted) setState(() => _showButton = true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 10),
-              Text(
-                'lookWhatYouCanDo'.tr(), 
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF0288D1)),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'youHaveThreeTools'.tr(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 25),
-              
-              // 1. AI SCANNER (Purple/Pink Gradient)
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _showCard1 ? 1.0 : 0.0,
-                curve: Curves.easeOut,
-                child: Transform.translate(
-                  offset: _showCard1 ? Offset.zero : const Offset(0, 20),
-                  child: _buildGradientCard(
-                    imagePath: 'assets/tooth_scan.png', // <--- YOUR CUSTOM IMAGE
-                    title: 'aiToothScanner'.tr(), 
-                    subtitle: 'findsCavities'.tr(), 
-                    gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              
-              // 2. AR MODELS (Teal/Blue Gradient)
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _showCard2 ? 1.0 : 0.0,
-                curve: Curves.easeOut,
-                 child: Transform.translate(
-                  offset: _showCard2 ? Offset.zero : const Offset(0, 20),
-                  child: _buildGradientCard(
-                    imagePath: 'assets/tooth_AR.png', // <--- YOUR CUSTOM IMAGE
-                    title: 'threeDMagicModels'.tr(), 
-                    subtitle: 'seeInsideTooth'.tr(), 
-                    gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              
-              // 3. SMART E-LEARNING (Orange/Yellow Gradient)
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _showCard3 ? 1.0 : 0.0,
-                curve: Curves.easeOut,
-                 child: Transform.translate(
-                  offset: _showCard3 ? Offset.zero : const Offset(0, 20),
-                  child: _buildGradientCard(
-                    imagePath: 'assets/tooth_edu.png', // <--- YOUR CUSTOM IMAGE
-                    title: 'smartELearning'.tr(),  
-                    subtitle: 'includesGames'.tr(), 
-                    gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
-                  ),
-                ),
-              ),
-              
-              const Spacer(),
-              
-              // BUTTON (Animated)
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 500),
-                opacity: _showButton ? 1.0 : 0.0,
-                child: SizedBox(
-                  height: 65,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      SoundManager.playPop();
-
-                      // Mark onboarding as complete
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('onboarding_complete', true);
-
-                      if (!context.mounted) return;
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0288D1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 8,
-                      shadowColor: Colors.blueAccent.withOpacity(0.5),
-                    ),
-                    child: Text("${'startAdventure'.tr()} ⭐", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 🔥 UPDATED HELPER: Bigger Images (Height 55)
-  Widget _buildGradientCard({
-    required String imagePath, 
-    required String title, 
-    required String subtitle, 
-    required Gradient gradient
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: gradient, 
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 5))
-        ],
-      ),
-      child: Row(
-        children: [
-          // White circle background
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.25), shape: BoxShape.circle),
-            
-            // --- BIGGER IMAGE ---
-            child: Image.asset(
-              imagePath, 
-              height: 55, // <--- Big Size
-              width: 55,
-              fit: BoxFit.contain,
-              errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.white, size: 40),
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.white70, height: 1.2, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          )
-        ],
       ),
     );
   }
