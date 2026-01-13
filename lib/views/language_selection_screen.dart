@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toothymate_app_4/views/welcome_screens.dart';
+import '../services/sound_manager.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   final VoidCallback onLanguageSelected;
@@ -61,14 +62,14 @@ class LanguageSelectionScreen extends StatelessWidget {
                 _buildLanguageButton(
                   context,
                   'English',
-                  '🇺🇸',
+                  'EN',
                   const Locale('en'),
                 ),
                 const SizedBox(height: 20),
                 _buildLanguageButton(
                   context,
                   'Bahasa Melayu',
-                  '🇲🇾',
+                  'BM',
                   const Locale('ms'),
                 ),
               ],
@@ -81,10 +82,11 @@ class LanguageSelectionScreen extends StatelessWidget {
 
   Widget _buildLanguageButton(BuildContext context, String label, String flag, Locale locale) {
     return SizedBox(
-      width: 250,
-      height: 60,
+      width: 280,
+      height: 65,
       child: ElevatedButton(
         onPressed: () async {
+          SoundManager.playPop();
           // Save language preference first
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('app_locale', locale.languageCode);
@@ -110,17 +112,30 @@ class LanguageSelectionScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
           elevation: 5,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(flag, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: 15),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.blue.shade800,
+                shape: BoxShape.circle,
+              ),
+              child: Text(flag, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white)),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Text(
+                label,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
