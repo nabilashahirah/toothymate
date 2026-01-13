@@ -42,7 +42,7 @@ class AiService {
       }
 
       img.Image oriented = img.bakeOrientation(image);
-      img.Image resized = img.copyResizeCropSquare(oriented, AppConfig.modelInputSize);
+      img.Image resized = img.copyResizeCropSquare(oriented, size: AppConfig.modelInputSize);
 
       var input = _imageToFloat32(resized).reshape([1, AppConfig.modelInputSize, AppConfig.modelInputSize, 3]);
       var output = List.filled(labels.length, 0.0).reshape([1, labels.length]);
@@ -75,9 +75,9 @@ class AiService {
     for (int y = 0; y < AppConfig.modelInputSize; y++) {
       for (int x = 0; x < AppConfig.modelInputSize; x++) {
         final pixel = image.getPixel(x, y);
-        buffer[index++] = (img.getRed(pixel) - 127.5) / 127.5;
-        buffer[index++] = (img.getGreen(pixel) - 127.5) / 127.5;
-        buffer[index++] = (img.getBlue(pixel) - 127.5) / 127.5;
+        buffer[index++] = (pixel.r - 127.5) / 127.5;
+        buffer[index++] = (pixel.g - 127.5) / 127.5;
+        buffer[index++] = (pixel.b - 127.5) / 127.5;
       }
     }
     return buffer;

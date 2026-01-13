@@ -7,9 +7,9 @@
     <uses-feature android:name="android.hardware.camera.ar" />
 
     <application
-        android:label="toothymate_app_4"
+        android:label="ToothyMate"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
 
         <activity
             android:name=".MainActivity"

@@ -410,6 +410,13 @@ class _LessonScreenState extends State<LessonScreen> {
           if (isVideo && yt != null) YoutubePlayer(controller: yt!) else Image.asset(widget.lesson.image, height: 250, fit: BoxFit.contain),
           Padding(padding: const EdgeInsets.all(25), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             if(isVideo) _buildTimerUI(),
+            if(isVideo) Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                "Disclaimer: This video is sourced from YouTube for educational purposes only. All rights belong to the original creators.",
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontStyle: FontStyle.italic),
+              ),
+            ),
             const SizedBox(height: 20),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Expanded(child: Text(widget.lesson.subtitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryDarkBlue))),
