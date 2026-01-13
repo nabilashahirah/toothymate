@@ -10,6 +10,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'ai_scan_screen.dart';
 
 // --- App Colors & Styles ---
 class AppColors {
@@ -431,6 +432,31 @@ class _LessonScreenState extends State<LessonScreen> {
             ]),
             const SizedBox(height: 15),
             if (isMyth) _buildFlipCard() else RichText(text: widget.lesson.parsedContent),
+            
+            // 🚀 AI LINK BUTTON (For Core Lessons)
+            if (widget.lesson.category == "Core") 
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: InkWell(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ToothScanScreen())),
+                  borderRadius: BorderRadius.circular(15),
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.orange.shade300),
+                    ),
+                    child: Row(children: [
+                      const Icon(Icons.center_focus_weak_rounded, color: Colors.deepOrange, size: 30),
+                      const SizedBox(width: 15),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text("aiScanner".tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange)), Text("scanTeeth".tr(), style: const TextStyle(fontSize: 12, color: Colors.brown))])),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.deepOrange, size: 16)
+                    ]),
+                  ),
+                ),
+              ),
+
             const SizedBox(height: 40),
             Center(child: ElevatedButton.icon(onPressed: _showQuizDialog, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("I Learned This! 🌟", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
             const SizedBox(height: 50),
