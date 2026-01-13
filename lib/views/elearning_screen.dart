@@ -77,6 +77,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
   bool loading = true;
   bool isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  Locale? _currentLocale;
 
   @override
   void initState() {
@@ -84,9 +85,20 @@ class _ElearningScreenState extends State<ElearningScreen> {
     // Logic to handle auto-filtering from AI Scanner
     if (widget.initialSearch != null) {
       _searchController.text = widget.initialSearch!;
-      isSearching = true; 
+      isSearching = true;
     }
     loadData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload lessons if locale changed
+    final locale = context.locale;
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      loadData();
+    }
   }
 
   Future<void> loadData() async {
@@ -283,6 +295,8 @@ class _LessonScreenState extends State<LessonScreen> {
     "13": {"q": "What is the best way to keep teeth shiny today?", "a": ["Only eating sweets", "Brushing twice a day", "Not brushing"], "correct": "Brushing twice a day"},
   };
 
+  Locale? _currentLocale;
+
   @override
   void initState() {
     super.initState();
@@ -305,6 +319,20 @@ class _LessonScreenState extends State<LessonScreen> {
         }
       });
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload content if locale changed
+    final locale = context.locale;
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      // Force a rebuild to update translated text
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   // Helper function to remove emojis from text

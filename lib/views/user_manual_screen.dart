@@ -28,6 +28,7 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  Locale? _currentLocale;
 
   @override
   void initState() {
@@ -35,6 +36,20 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
     _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload content if locale changed
+    final locale = context.locale;
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      // Force a rebuild to update translated text
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   @override

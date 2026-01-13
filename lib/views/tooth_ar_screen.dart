@@ -74,6 +74,8 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
     {"label": "10", "titleKey": "case10Title", "descKey": "case10Desc"},
   ];
 
+  Locale? _currentLocale;
+
   @override
   void initState() {
     super.initState();
@@ -94,6 +96,22 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
         _prepareLocalModel();
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload content if locale changed
+    final locale = context.locale;
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      // Update TTS language
+      _initTts();
+      // Force a rebuild to update translated text
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   Future<void> _initTts() async {
