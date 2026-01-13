@@ -4,7 +4,6 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart'; // Add this
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:confetti/confetti.dart';
