@@ -85,6 +85,65 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> with SingleTick
   }
 }
 
+// 3. FADE IN UP ANIMATION (For Onboarding Items)
+class AnimateIn extends StatefulWidget {
+  final Widget child;
+  final int delay;
+  final bool isVisible;
+
+  const AnimateIn({super.key, required this.child, this.delay = 0, required this.isVisible});
+
+  @override
+  State<AnimateIn> createState() => _AnimateInState();
+}
+
+class _AnimateInState extends State<AnimateIn> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+  late Animation<Offset> _offset;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _offset = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    if (widget.isVisible) _play();
+  }
+
+  @override
+  void didUpdateWidget(AnimateIn oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isVisible != oldWidget.isVisible) {
+      if (widget.isVisible) {
+        _play();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  void _play() async {
+    await Future.delayed(Duration(milliseconds: widget.delay));
+    if (mounted && widget.isVisible) _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(position: _offset, child: widget.child),
+    );
+  }
+}
+
 // ==========================================
 // 🚀 SCREEN 1: ONBOARDING (Story & Info)
 // ==========================================
@@ -209,6 +268,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemBuilder: (context, index) {
                     final page = _pages[index];
                     final bool isFeatures = page['isFeatures'] == true;
+                    final bool isActive = _currentPage == index;
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -219,59 +279,83 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           if (isFeatures)
                             Column(
                               children: [
-                                _buildGradientCard(
-                                  imagePath: 'assets/tooth_scan.png',
-                                  title: 'aiToothScanner'.tr(), 
-                                  subtitle: 'findsCavities'.tr(), 
-                                  gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
+                                AnimateIn(
+                                  isVisible: isActive,
+                                  delay: 100,
+                                  child: _buildGradientCard(
+                                    imagePath: 'assets/tooth_scan.png',
+                                    title: 'aiToothScanner'.tr(), 
+                                    subtitle: 'findsCavities'.tr(), 
+                                    gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
-                                _buildGradientCard(
-                                  imagePath: 'assets/tooth_AR.png',
-                                  title: 'threeDMagicModels'.tr(), 
-                                  subtitle: 'seeInsideTooth'.tr(), 
-                                  gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
+                                AnimateIn(
+                                  isVisible: isActive,
+                                  delay: 300,
+                                  child: _buildGradientCard(
+                                    imagePath: 'assets/tooth_AR.png',
+                                    title: 'threeDMagicModels'.tr(), 
+                                    subtitle: 'seeInsideTooth'.tr(), 
+                                    gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
+                                  ),
                                 ),
                                 const SizedBox(height: 10),
-                                _buildGradientCard(
-                                  imagePath: 'assets/tooth_edu.png',
-                                  title: 'smartELearning'.tr(),  
-                                  subtitle: 'includesGames'.tr(), 
-                                  gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
+                                AnimateIn(
+                                  isVisible: isActive,
+                                  delay: 500,
+                                  child: _buildGradientCard(
+                                    imagePath: 'assets/tooth_edu.png',
+                                    title: 'smartELearning'.tr(),  
+                                    subtitle: 'includesGames'.tr(), 
+                                    gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
+                                  ),
                                 ),
                               ],
                             )
                           else
-                            SizedBox(
-                            height: 300,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Main Asset
-                                Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
-                                
-                                // Deco Asset (if any)
-                                if (page['deco'] != null)
-                                  Positioned(
-                                    right: 0, top: 0,
-                                    child: Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
-                                  ),
-                              ],
+                            AnimateIn(
+                              isVisible: isActive,
+                              delay: 0,
+                              child: SizedBox(
+                                height: 300,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Main Asset
+                                    Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
+                                    
+                                    // Deco Asset (if any)
+                                    if (page['deco'] != null)
+                                      Positioned(
+                                        right: 0, top: 0,
+                                        child: Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 30),
                           
                           // --- TEXT ---
-                          Text(
-                            page['title'].toString().tr(),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
+                          AnimateIn(
+                            isVisible: isActive,
+                            delay: 200,
+                            child: Text(
+                              page['title'].toString().tr(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
+                            ),
                           ),
                           const SizedBox(height: 15),
-                          Text(
-                            page['body'].toString().tr(),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
+                          AnimateIn(
+                            isVisible: isActive,
+                            delay: 400,
+                            child: Text(
+                              page['body'].toString().tr(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
+                            ),
                           ),
                         ],
                       ),
