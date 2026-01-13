@@ -186,7 +186,7 @@ class _LanguageSelector extends StatelessWidget {
                   Expanded(
                     child: _LanguageButton(
                       label: 'English',
-                      flag: '🇺🇸',
+                      flag: 'EN',
                       isSelected: isEnglish,
                       onTap: () async {
                         await context.setLocale(const Locale('en'));
@@ -217,7 +217,7 @@ class _LanguageSelector extends StatelessWidget {
                   Expanded(
                     child: _LanguageButton(
                       label: 'Bahasa Melayu',
-                      flag: '🇲🇾',
+                      flag: 'BM',
                       isSelected: !isEnglish,
                       onTap: () async {
                         await context.setLocale(const Locale('ms'));
@@ -284,9 +284,19 @@ class _LanguageButton extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(
-              flag,
-              style: const TextStyle(fontSize: 28),
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryDarkBlue : Colors.white.withOpacity(0.1),
+                shape: BoxShape.circle,
+                border: isSelected ? null : Border.all(color: Colors.white, width: 2),
+              ),
+              child: Text(
+                flag,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
+              ),
             ),
             const SizedBox(height: 4),
             Text(
