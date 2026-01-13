@@ -41,12 +41,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late Animation<double> _fabScaleAnimation;
 
   late List<Widget> _pages;
+  
+  // 🔑 TUTORIAL KEYS
+  final GlobalKey _fabKey = GlobalKey();
+  final GlobalKey _chatKey = GlobalKey();
+  final GlobalKey _missionKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      HomeContent(key: _homeKey), 
+      HomeContent(
+        key: _homeKey,
+        chatKey: _chatKey,
+        missionKey: _missionKey,
+      ), 
       const ElearningScreen(),
       const AboutScreen(),
       const UserManualScreen(), // This is fine because UserManualScreen uses Consumer internally
@@ -61,6 +70,36 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     _fabScaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _fabPulseController, curve: Curves.easeInOut),
     );
+
+    // 🎓 Check for Tutorial
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkTutorial());
+  }
+
+  Future<void> _checkTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool seen = prefs.getBool('home_tutorial_seen') ?? false;
+    if (!seen) {
+      // Start tutorial
+      _showTutorial();
+      await prefs.setBool('home_tutorial_seen', true);
+    }
+  }
+
+  void _showTutorial() {
+    OverlayEntry? entry;
+    entry = OverlayEntry(
+      builder: (context) => TutorialOverlay(
+        steps: [
+          TutorialStep(targetKey: _chatKey, title: "aiChat".tr(), description: "chatTutorialDesc".tr()),
+          TutorialStep(targetKey: _missionKey, title: "myMissions".tr(), description: "missionTutorialDesc".tr()),
+          TutorialStep(targetKey: _fabKey, title: "aiScanner".tr(), description: "scannerTutorialDesc".tr(), isFab: true),
+        ],
+        onComplete: () {
+          entry?.remove();
+        },
+      ),
+    );
+    Overlay.of(context).insert(entry);
   }
 
   @override
@@ -79,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       floatingActionButton: ScaleTransition(
         scale: _fabScaleAnimation,
         child: Container(
+          key: _fabKey, // <--- Key for Tutorial
           height: 75, width: 75,
           decoration: BoxDecoration(
             gradient: const LinearGradient(colors: [Color(0xFFFFEA00), Color(0xFFFF9800)], begin: Alignment.topLeft, end: Alignment.bottomRight),
@@ -138,7 +178,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
 // --- MAIN HOME CONTENT ---
 class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
+  final GlobalKey? chatKey;
+  final GlobalKey? missionKey;
+  const HomeContent({super.key, this.chatKey, this.missionKey});
   @override
   State<HomeContent> createState() => _HomeContentState();
 }
@@ -527,6 +569,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                                   Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()));
                                 },
                                 child: Container(
+                                  key: widget.chatKey, // <--- Key for Tutorial
                                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.15),
@@ -576,7 +619,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Row(children: [
+                        Row(key: widget.missionKey, children: [ // <--- Key for Tutorial
                           _buildMissionToggle("${'morning'.tr()}\n${'brush'.tr()}", Icons.wb_sunny_rounded, _morningBrush, 'morning_brush', const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), Colors.orange),
                           const SizedBox(width: 15),
                           _buildMissionToggle("${'night'.tr()}\n${'brush'.tr()}", Icons.bedtime_rounded, _nightBrush, 'night_brush', const LinearGradient(colors: [Color(0xFF9FA8DA), Color(0xFF3F51B5)]), Colors.indigo),
@@ -783,4 +826,128 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       ),
     );
   }
+}
+
+// ==========================================
+// 🎓 TUTORIAL OVERLAY WIDGET
+// ==========================================
+class TutorialStep {
+  final GlobalKey targetKey;
+  final String title;
+  final String description;
+  final bool isFab;
+  TutorialStep({required this.targetKey, required this.title, required this.description, this.isFab = false});
+}
+
+class TutorialOverlay extends StatefulWidget {
+  final List<TutorialStep> steps;
+  final VoidCallback onComplete;
+
+  const TutorialOverlay({super.key, required this.steps, required this.onComplete});
+
+  @override
+  State<TutorialOverlay> createState() => _TutorialOverlayState();
+}
+
+class _TutorialOverlayState extends State<TutorialOverlay> {
+  int _currentIndex = 0;
+
+  void _nextStep() {
+    if (_currentIndex < widget.steps.length - 1) {
+      setState(() => _currentIndex++);
+    } else {
+      widget.onComplete();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final step = widget.steps[_currentIndex];
+    final renderBox = step.targetKey.currentContext?.findRenderObject() as RenderBox?;
+    
+    if (renderBox == null) {
+      // If widget not found, skip or finish
+      WidgetsBinding.instance.addPostFrameCallback((_) => _nextStep());
+      return const SizedBox();
+    }
+
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
+
+    return Stack(
+      children: [
+        // 1. Dark Background with Hole
+        CustomPaint(
+          size: MediaQuery.of(context).size,
+          painter: _HolePainter(
+            targetOffset: offset,
+            targetSize: size,
+            isCircle: step.isFab,
+          ),
+        ),
+
+        // 2. Text & Button
+        Positioned(
+          top: offset.dy > MediaQuery.of(context).size.height / 2 ? offset.dy - 150 : offset.dy + size.height + 20,
+          left: 20,
+          right: 20,
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Text(
+                  step.title,
+                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  step.description,
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _nextStep,
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+                  child: Text(_currentIndex == widget.steps.length - 1 ? "Finish" : "Next"),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HolePainter extends CustomPainter {
+  final Offset targetOffset;
+  final Size targetSize;
+  final bool isCircle;
+
+  _HolePainter({required this.targetOffset, required this.targetSize, required this.isCircle});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.black.withOpacity(0.85);
+    
+    final path = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    
+    Path holePath;
+    if (isCircle) {
+      holePath = Path()..addOval(Rect.fromLTWH(targetOffset.dx - 5, targetOffset.dy - 5, targetSize.width + 10, targetSize.height + 10));
+    } else {
+      holePath = Path()..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(targetOffset.dx - 5, targetOffset.dy - 5, targetSize.width + 10, targetSize.height + 10),
+        const Radius.circular(10),
+      ));
+    }
+
+    final finalPath = Path.combine(PathOperation.difference, path, holePath);
+    canvas.drawPath(finalPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

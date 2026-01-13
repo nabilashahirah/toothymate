@@ -309,5 +309,9 @@
   "onboardingTitle2": "Belajar Sambil Bermain",
   "onboardingBody2": "ToothyMate menjadikan pembelajaran gigi menyeronokkan dengan permainan interaktif dan panduan visual.",
   "onboardingTitle3": "Tabiat Sihat Sepanjang Hayat",
-  "onboardingBody3": "Kanak-kanak kekal bermotivasi dengan misi menyeronokkan, memudahkan penjagaan harian untuk ibu bapa."
+  "onboardingBody3": "Kanak-kanak kekal bermotivasi dengan misi menyeronokkan, memudahkan penjagaan harian untuk ibu bapa.",
+  "chatTutorialDesc": "Tanya pembantu AI kami apa sahaja tentang gigi anda!",
+  "missionTutorialDesc": "Selesaikan ini setiap hari untuk kekalkan streak anda!",
+  "scannerTutorialDesc": "Tekan sini untuk imbas gigi anda dan cari kuman!",
+  "trophyTutorialDesc": "Kumpul lencana dengan memberus awal dan belajar!"
 }

@@ -309,5 +309,9 @@
   "onboardingTitle2": "Learn Through Play",
   "onboardingBody2": "ToothyMate makes understanding teeth fun with interactive games and visual guides.",
   "onboardingTitle3": "Healthy Habits for Life",
-  "onboardingBody3": "Kids stay motivated with fun missions, making daily oral care easier for parents."
+  "onboardingBody3": "Kids stay motivated with fun missions, making daily oral care easier for parents.",
+  "chatTutorialDesc": "Ask our AI assistant anything about your teeth!",
+  "missionTutorialDesc": "Complete these daily to keep your streak alive!",
+  "scannerTutorialDesc": "Tap here to scan your teeth for sugar bugs!",
+  "trophyTutorialDesc": "Earn badges by brushing early and learning!"
 }
