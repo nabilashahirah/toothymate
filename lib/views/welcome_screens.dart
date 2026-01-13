@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lottie/lottie.dart';
 import '../services/sound_manager.dart'; // Ensure this path matches your folder structure
 import 'home_screen.dart'; 
 
@@ -88,93 +89,219 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> with SingleTick
 // ==========================================
 // 🚀 SCREEN 1: ONBOARDING (Story & Info)
 // ==========================================
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _controller = PageController();
+  int _currentPage = 0;
+
+  // 📝 CONTENT DATA
+  final List<Map<String, dynamic>> _pages = [
+    {
+      // Screen 1: Core Problem
+      "title": "onboardingTitle1",
+      "body": "onboardingBody1",
+      "image": "assets/images/kidbrush.png",
+      "deco": "assets/images/question.png",
+      "isLottie": false,
+    },
+    {
+      // Screen 2: How ToothyMate Helps
+      "title": "onboardingTitle2",
+      "body": "onboardingBody2",
+      "image": "https://lottie.host/c280d579-23e1-47cc-8601-04b9ada10fd2/uNiMyCWj8I.json",
+      "deco": null,
+      "isLottie": true,
+    },
+    {
+      // Screen 3: Benefits
+      "title": "onboardingTitle3",
+      "body": "onboardingBody3",
+      "image": "https://lottie.host/60fd91f0-eac4-49d2-8535-e55e0cec4e1f/GcdBccOGtd.json",
+      "deco": null,
+      "isLottie": true,
+    },
+  ];
+
+  void _nextPage() {
+    if (_currentPage < _pages.length - 1) {
+      _controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    } else {
+      _finishOnboarding();
+    }
+  }
+
+  void _finishOnboarding() {
+    SoundManager.playPop();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const NameInputScreen()));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedBackground( // <--- JUICE: Moving Water
+      body: AnimatedBackground(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Spacer(),
-                
-                // --- BREATHING MASCOT ---
-                Hero(
-                  tag: 'mascot',
-                  child: BreathingWidget( // <--- JUICE: Breathing
-                    child: Image.asset(
-                      'assets/tooth_logo.png', 
-                      height: 190, 
-                      errorBuilder: (c,e,s) => const Icon(Icons.face_retouching_natural, size: 150, color: Colors.white),
-                    ),
-                  ),
+          child: Column(
+            children: [
+              // SKIP BUTTON
+              Align(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  onPressed: _finishOnboarding,
+                  child: Text("skip".tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(height: 20),
-                
-                // --- TITLE ---
-                Text(
-                  'welcomeTitle'.tr(), 
-                  style: const TextStyle(
-                    fontSize: 45, fontWeight: FontWeight.w900, color: Colors.white,
-                    shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]
-                  )
-                ),
-                
-                const SizedBox(height: 30),
+              ),
 
-                // --- INFO CARD (With Client Integration) ---
-                Container(
-                  padding: const EdgeInsets.all(25),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.95),
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15, offset: const Offset(0, 5))],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Dr. Karthi Needs You!", // <--- CLIENT BRANDING
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
-                      ).tr(),
-                      SizedBox(height: 12),
-                      Text(
-                        "joinMission",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
-                      ).tr(),
-                    ],
-                  ),
+              // PAGE CONTENT
+              Expanded(
+                child: PageView.builder(
+                  controller: _controller,
+                  onPageChanged: (index) => setState(() => _currentPage = index),
+                  itemCount: _pages.length,
+                  itemBuilder: (context, index) {
+                    final page = _pages[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // --- IMAGE AREA ---
+                          SizedBox(
+                            height: 300,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Main Asset
+                                page['isLottie']
+                                  ? Builder(
+                                      builder: (context) {
+                                        String path = page['image'].toString();
+                                        if (path.startsWith('http')) {
+                                          return Lottie.network(
+                                            path,
+                                            height: 250,
+                                            errorBuilder: (c, e, s) => const Icon(Icons.broken_image, color: Colors.white54, size: 60),
+                                          );
+                                        } else {
+                                          return Lottie.asset(
+                                            path,
+                                            height: 250,
+                                            decoder: path.endsWith('.lottie') ? LottieComposition.decodeZip : null,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Icon(Icons.broken_image, color: Colors.white54, size: 60),
+                                                  Text("Missing:\n$path", textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+                                      },
+                                    )
+                                  : Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
+                                
+                                // Deco Asset (if any)
+                                if (page['deco'] != null)
+                                  Positioned(
+                                    right: 0, top: 0,
+                                    child: page['isLottie']
+                                      ? Builder(
+                                          builder: (context) {
+                                            String path = page['deco'].toString();
+                                            if (path.startsWith('http')) {
+                                              return Lottie.network(
+                                                path,
+                                                height: 80,
+                                                errorBuilder: (c, e, s) => const SizedBox(),
+                                              );
+                                            } else {
+                                              return Lottie.asset(
+                                                path,
+                                                height: 80,
+                                                decoder: path.endsWith('.lottie') ? LottieComposition.decodeZip : null,
+                                                errorBuilder: (c,e,s) => const SizedBox()
+                                              );
+                                            }
+                                          },
+                                        )
+                                      : Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          
+                          // --- TEXT ---
+                          Text(
+                            page['title'].toString().tr(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            page['body'].toString().tr(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
+              ),
 
-                const Spacer(),
-                
-                // --- BUTTON ---
-                SizedBox(
-                  width: double.infinity,
-                  height: 65,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      SoundManager.playPop(); // <--- JUICE: Sound
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const NameInputScreen()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF9800), 
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 8,
-                      shadowColor: Colors.orangeAccent,
+              // BOTTOM CONTROLS
+              Padding(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  children: [
+                    // Dots Indicator
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(_pages.length, (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        height: 10,
+                        width: _currentPage == index ? 30 : 10,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? Colors.orange : Colors.white54,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      )),
                     ),
-                    child: Text('${'getStarted'.tr()} 🚀', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ),
+                    const SizedBox(height: 20),
+                    
+                    // Action Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          SoundManager.playPop();
+                          _nextPage();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF9800),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          elevation: 8,
+                        ),
+                        child: Text(
+                          _currentPage == _pages.length - 1 ? "getStarted".tr() + " 🚀" : "next".tr() + " ➡️",
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 40),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
