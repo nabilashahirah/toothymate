@@ -25,54 +25,56 @@ class LanguageSelectionScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo
-                Image.asset(
-                  'assets/tooth_logo.png',
-                  height: 120,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.health_and_safety, size: 100, color: Colors.white),
-                ),
-                const SizedBox(height: 40),
-
-                const Text(
-                  'Choose Your Language',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo
+                  Image.asset(
+                    'assets/tooth_logo.png',
+                    height: 120,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.health_and_safety, size: 100, color: Colors.white),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Pilih Bahasa Anda',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white70,
-                    fontStyle: FontStyle.italic,
+                  const SizedBox(height: 40),
+            
+                  const Text(
+                    'Choose Your Language',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-
-                const SizedBox(height: 50),
-
-                _buildLanguageButton(
-                  context,
-                  'English',
-                  'EN',
-                  const Locale('en'),
-                ),
-                const SizedBox(height: 20),
-                _buildLanguageButton(
-                  context,
-                  'Bahasa Melayu',
-                  'BM',
-                  const Locale('ms'),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Pilih Bahasa Anda',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+            
+                  const SizedBox(height: 50),
+            
+                  _buildLanguageButton(
+                    context,
+                    'English',
+                    'EN',
+                    const Locale('en'),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildLanguageButton(
+                    context,
+                    'Bahasa Melayu',
+                    'BM',
+                    const Locale('ms'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

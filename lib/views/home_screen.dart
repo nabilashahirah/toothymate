@@ -508,7 +508,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
           children: [
             // 1. FIXED BACKGROUND GRADIENT (Solves the "Dark Corner" issue)
             Container(
-              height: 400, // Covers the top part of the screen
+              height: MediaQuery.of(context).size.height * 0.45, // Responsive Height
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.primaryBlue, AppColors.primaryDarkBlue],

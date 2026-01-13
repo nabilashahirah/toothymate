@@ -245,6 +245,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
       body: AnimatedBackground(
         child: SafeArea(
@@ -272,92 +273,96 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // --- IMAGE AREA ---
-                          if (isFeatures)
-                            Column(
-                              children: [
-                                AnimateIn(
-                                  isVisible: isActive,
-                                  delay: 100,
-                                  child: _buildGradientCard(
-                                    imagePath: 'assets/tooth_scan.png',
-                                    title: 'aiToothScanner'.tr(), 
-                                    subtitle: 'findsCavities'.tr(), 
-                                    gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                AnimateIn(
-                                  isVisible: isActive,
-                                  delay: 300,
-                                  child: _buildGradientCard(
-                                    imagePath: 'assets/tooth_AR.png',
-                                    title: 'threeDMagicModels'.tr(), 
-                                    subtitle: 'seeInsideTooth'.tr(), 
-                                    gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                AnimateIn(
-                                  isVisible: isActive,
-                                  delay: 500,
-                                  child: _buildGradientCard(
-                                    imagePath: 'assets/tooth_edu.png',
-                                    title: 'smartELearning'.tr(),  
-                                    subtitle: 'includesGames'.tr(), 
-                                    gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
-                                  ),
-                                ),
-                              ],
-                            )
-                          else
-                            AnimateIn(
-                              isVisible: isActive,
-                              delay: 0,
-                              child: SizedBox(
-                                height: 300,
-                                child: Stack(
-                                  alignment: Alignment.center,
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // --- IMAGE AREA ---
+                              if (isFeatures)
+                                Column(
                                   children: [
-                                    // Main Asset
-                                    Image.asset(page['image'], height: 250, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
-                                    
-                                    // Deco Asset (if any)
-                                    if (page['deco'] != null)
-                                      Positioned(
-                                        right: 0, top: 0,
-                                        child: Image.asset(page['deco'], height: 80, errorBuilder: (c,e,s) => const SizedBox()),
+                                    AnimateIn(
+                                      isVisible: isActive,
+                                      delay: 100,
+                                      child: _buildGradientCard(
+                                        imagePath: 'assets/tooth_scan.png',
+                                        title: 'aiToothScanner'.tr(), 
+                                        subtitle: 'findsCavities'.tr(), 
+                                        gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
                                       ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    AnimateIn(
+                                      isVisible: isActive,
+                                      delay: 300,
+                                      child: _buildGradientCard(
+                                        imagePath: 'assets/tooth_AR.png',
+                                        title: 'threeDMagicModels'.tr(), 
+                                        subtitle: 'seeInsideTooth'.tr(), 
+                                        gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    AnimateIn(
+                                      isVisible: isActive,
+                                      delay: 500,
+                                      child: _buildGradientCard(
+                                        imagePath: 'assets/tooth_edu.png',
+                                        title: 'smartELearning'.tr(),  
+                                        subtitle: 'includesGames'.tr(), 
+                                        gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
+                                      ),
+                                    ),
                                   ],
+                                )
+                              else
+                                AnimateIn(
+                                  isVisible: isActive,
+                                  delay: 0,
+                                  child: SizedBox(
+                                    height: screenSize.height * 0.35, // Responsive Height
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        // Main Asset
+                                        Image.asset(page['image'], height: screenSize.height * 0.28, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
+                                        
+                                        // Deco Asset (if any)
+                                        if (page['deco'] != null)
+                                          Positioned(
+                                            right: 0, top: 0,
+                                            child: Image.asset(page['deco'], height: screenSize.height * 0.1, errorBuilder: (c,e,s) => const SizedBox()),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 30),
+                              
+                              // --- TEXT ---
+                              AnimateIn(
+                                isVisible: isActive,
+                                delay: 200,
+                                child: Text(
+                                  page['title'].toString().tr(),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
                                 ),
                               ),
-                            ),
-                          const SizedBox(height: 30),
-                          
-                          // --- TEXT ---
-                          AnimateIn(
-                            isVisible: isActive,
-                            delay: 200,
-                            child: Text(
-                              page['title'].toString().tr(),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
-                            ),
+                              const SizedBox(height: 15),
+                              AnimateIn(
+                                isVisible: isActive,
+                                delay: 400,
+                                child: Text(
+                                  page['body'].toString().tr(),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 15),
-                          AnimateIn(
-                            isVisible: isActive,
-                            delay: 400,
-                            child: Text(
-                              page['body'].toString().tr(),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     );
                   },
