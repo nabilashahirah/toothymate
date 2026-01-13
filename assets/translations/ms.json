@@ -303,5 +303,11 @@
   "healthyTeethAdvice": "Hebat! Teruskan memberus dan pemeriksaan berkala.",
   "defaultAdvice": "Kekalkan kebersihan mulut yang baik.",
   "scanGreeting": "Selamat datang ke ToothyScan AI. Pastikan gigi anda betul-betul di dalam kotak.",
-  "tryAgainMessage": "Jom cuba lagi! Saya sedia bila awak sedia."
+  "tryAgainMessage": "Jom cuba lagi! Saya sedia bila awak sedia.",
+  "onboardingTitle1": "Masalah Gigi Tersembunyi",
+  "onboardingBody1": "Tanpa bimbingan, masalah kecil boleh membesar tanpa disedari. Penjagaan awal amat penting.",
+  "onboardingTitle2": "Belajar Sambil Bermain",
+  "onboardingBody2": "ToothyMate menjadikan pembelajaran gigi menyeronokkan dengan permainan interaktif dan panduan visual.",
+  "onboardingTitle3": "Tabiat Sihat Sepanjang Hayat",
+  "onboardingBody3": "Kanak-kanak kekal bermotivasi dengan misi menyeronokkan, memudahkan penjagaan harian untuk ibu bapa."
 }

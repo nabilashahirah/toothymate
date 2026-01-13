@@ -303,5 +303,11 @@
   "healthyTeethAdvice": "Great! Keep up regular brushing and check-ups.",
   "defaultAdvice": "Maintain proper oral hygiene.",
   "scanGreeting": "Welcome to ToothyScan AI. Make sure your teeth are exactly inside the box.",
-  "tryAgainMessage": "Let's try again! Ready when you are."
+  "tryAgainMessage": "Let's try again! Ready when you are.",
+  "onboardingTitle1": "Hidden Dental Issues",
+  "onboardingBody1": "Without guidance, small problems can grow unnoticed. Early care is essential.",
+  "onboardingTitle2": "Learn Through Play",
+  "onboardingBody2": "ToothyMate makes understanding teeth fun with interactive games and visual guides.",
+  "onboardingTitle3": "Healthy Habits for Life",
+  "onboardingBody3": "Kids stay motivated with fun missions, making daily oral care easier for parents."
 }
