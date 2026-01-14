@@ -166,12 +166,16 @@ class _ElearningScreenState extends State<ElearningScreen> {
   }
 
   void _showBadgeGallery() {
-    Map<String, int> stats = {
-      "Core": completedIds.where((id) => allLessons.any((l) => l.id == id && l.category == "Core")).length,
-      "Myth": completedIds.where((id) => allLessons.any((l) => l.id == id && l.category == "Myth")).length,
-      "Mom": completedIds.where((id) => allLessons.any((l) => l.id == id && l.category == "Mom")).length,
-      "Video": completedIds.where((id) => allLessons.any((l) => l.id == id && l.category == "Video")).length,
-    };
+    // Get unique categories from all lessons to build stats
+    Set<String> uniqueCategories = allLessons.map((lesson) => lesson.category).toSet();
+    Map<String, int> stats = {};
+
+    for (String category in uniqueCategories) {
+      stats[category] = completedIds.where((id) => allLessons.any((l) => l.id == id && l.category == category)).length;
+    }
+
+    // Also include "All" for completeness
+    stats["All"] = completedIds.length;
 
     showModalBottomSheet(
       context: context,
@@ -193,7 +197,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Icon(_getIcon(e.key), color: isDone ? _getColor(e.key) : Colors.grey, size: 40),
                     const SizedBox(height: 8),
-                    Text(e.key, style: TextStyle(fontWeight: FontWeight.bold, color: isDone ? Colors.black : Colors.grey)),
+                    Text(_getCategoryTranslationKey(e.key).tr(), style: TextStyle(fontWeight: FontWeight.bold, color: isDone ? Colors.black : Colors.grey)),
                     Text("${e.value} ${"done".tr()}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   ]),
                 );
@@ -206,8 +210,52 @@ class _ElearningScreenState extends State<ElearningScreen> {
     );
   }
 
-  IconData _getIcon(String c) => c == "Core" ? Icons.verified_user : c == "Myth" ? Icons.bolt_rounded : c == "Mom" ? Icons.favorite : Icons.play_circle_filled;
-  Color _getColor(String c) => c == "Core" ? Colors.green : c == "Myth" ? Colors.purple : c == "Mom" ? Colors.pink : Colors.blue;
+  IconData _getIcon(String c) {
+    // Map categories to appropriate icons
+    if (c.toLowerCase().contains("core") || c.toLowerCase().contains("asas")) {
+      return Icons.verified_user;
+    } else if (c.toLowerCase().contains("myth") || c.toLowerCase().contains("mitos")) {
+      return Icons.bolt_rounded;
+    } else if (c.toLowerCase().contains("family") || c.toLowerCase().contains("penjagaan") || c.toLowerCase().contains("mom")) {
+      return Icons.family_restroom;
+    } else if (c.toLowerCase().contains("video")) {
+      return Icons.play_circle_filled;
+    } else {
+      // Default icon for other categories
+      return Icons.help_outline;
+    }
+  }
+
+  String _getCategoryTranslationKey(String category) {
+    if (category.toLowerCase().contains("core") || category.toLowerCase().contains("asas")) {
+      return "core";
+    } else if (category.toLowerCase().contains("myth") || category.toLowerCase().contains("mitos")) {
+      return "myth";
+    } else if (category.toLowerCase().contains("family") || category.toLowerCase().contains("penjagaan") || category.toLowerCase().contains("mom")) {
+      return "familyCare";
+    } else if (category.toLowerCase().contains("video")) {
+      return "video";
+    } else {
+      // Return the category as is if no specific translation key is found
+      return category;
+    }
+  }
+
+  Color _getColor(String c) {
+    // Map categories to appropriate colors
+    if (c.toLowerCase().contains("core") || c.toLowerCase().contains("asas")) {
+      return Colors.green;
+    } else if (c.toLowerCase().contains("myth") || c.toLowerCase().contains("mitos")) {
+      return Colors.purple;
+    } else if (c.toLowerCase().contains("family") || c.toLowerCase().contains("penjagaan") || c.toLowerCase().contains("mom")) {
+      return Colors.pink;
+    } else if (c.toLowerCase().contains("video")) {
+      return Colors.blue;
+    } else {
+      // Default color for other categories
+      return Colors.orange;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -238,9 +286,11 @@ class _ElearningScreenState extends State<ElearningScreen> {
   }
 
   Widget _buildFilterBar() {
-    final cats = ["all", "core", "mom", "video"];
-    final catsDisplay = {"all": "All", "core": "Core", "mom": "Mom", "video": "Video"};
-    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: cats.map((c) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(c.tr()), selected: selectedCategory == catsDisplay[c], onSelected: (v) { setState(() { selectedCategory = catsDisplay[c]!; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == catsDisplay[c] ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
+    // Get unique categories from all lessons
+    Set<String> uniqueCategories = allLessons.map((lesson) => lesson.category).toSet();
+    List<String> categories = ["All", ...uniqueCategories.toList()];
+
+    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: categories.map((category) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(category == "All" ? "all".tr() : _getCategoryTranslationKey(category).tr()), selected: selectedCategory == category, onSelected: (v) { setState(() { selectedCategory = v ? category : "All"; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == category ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
   }
 
   Widget _buildProgressHeader() {
@@ -254,13 +304,23 @@ class _ElearningScreenState extends State<ElearningScreen> {
       final colors = _getColors(l.category);
       final done = completedIds.contains(l.id);
       return Stack(clipBehavior: Clip.none, children: [
-        Container(margin: const EdgeInsets.only(bottom: 30), height: 140, decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), gradient: LinearGradient(colors: colors), boxShadow: [BoxShadow(color: colors.last.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))]), child: Material(color: Colors.transparent, child: InkWell(borderRadius: BorderRadius.circular(25), onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: l))); loadData(); }, child: Padding(padding: const EdgeInsets.all(20), child: Row(children: [ Container(width: 80, height: 80, decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(15)), child: ClipRRect(borderRadius: BorderRadius.circular(15), child: l.category == "Video" ? const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 50) : Image.asset(l.image, fit: BoxFit.contain))), const SizedBox(width: 15), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)), Text(l.subtitle, maxLines: 2, style: const TextStyle(color: Colors.white70, fontSize: 13))])), Icon(done ? Icons.stars_rounded : Icons.arrow_forward_ios, color: done ? Colors.amber : Colors.white)]))))),
-        Positioned(top: -12, left: 15, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]), child: Text(l.category.toUpperCase(), style: TextStyle(color: colors.first, fontWeight: FontWeight.bold, fontSize: 10)))),
+        Container(margin: const EdgeInsets.only(bottom: 30), height: 140, decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), gradient: LinearGradient(colors: colors), boxShadow: [BoxShadow(color: colors.last.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))]), child: Material(color: Colors.transparent, child: InkWell(borderRadius: BorderRadius.circular(25), onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: l))); loadData(); }, child: Padding(padding: const EdgeInsets.all(20), child: Row(children: [ Container(width: 80, height: 80, decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(15)), child: ClipRRect(borderRadius: BorderRadius.circular(15), child: l.category.toLowerCase().contains("video") ? const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 50) : Image.asset(l.image, fit: BoxFit.contain))), const SizedBox(width: 15), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)), Text(l.subtitle, maxLines: 2, style: const TextStyle(color: Colors.white70, fontSize: 13))])), Icon(done ? Icons.stars_rounded : Icons.arrow_forward_ios, color: done ? Colors.amber : Colors.white)]))))),
+        Positioned(top: -12, left: 15, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]), child: Text(_getCategoryTranslationKey(l.category).tr().toUpperCase(), style: TextStyle(color: colors.first, fontWeight: FontWeight.bold, fontSize: 10)))),
       ]);
     });
   }
 
-  List<Color> _getColors(String c) => c == "Myth" ? AppColors.mythGradient : c == "Mom" ? AppColors.momGradient : c == "Video" ? AppColors.videoGradient : AppColors.coreGradient;
+  List<Color> _getColors(String c) {
+    if (c.toLowerCase().contains("myth") || c.toLowerCase().contains("mitos")) {
+      return AppColors.mythGradient;
+    } else if (c.toLowerCase().contains("family") || c.toLowerCase().contains("penjagaan") || c.toLowerCase().contains("mom")) {
+      return AppColors.momGradient;
+    } else if (c.toLowerCase().contains("video")) {
+      return AppColors.videoGradient;
+    } else {
+      return AppColors.coreGradient;
+    }
+  }
 }
 
 // --- LESSON DETAIL SCREEN ---
@@ -313,7 +373,7 @@ class _LessonScreenState extends State<LessonScreen> {
       _setupTts();
       Future.delayed(const Duration(milliseconds: 500), () {
         if(mounted){
-          String msg = widget.lesson.category == "Video"
+          String msg = widget.lesson.category.toLowerCase().contains("video")
             ? "watchVideoFirst".tr()
             : "${"letsLearnAbout".tr()} ${widget.lesson.title}";
           tts.speak(_removeEmojis(msg));
@@ -400,15 +460,15 @@ class _LessonScreenState extends State<LessonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isVideo = widget.lesson.category == "Video";
-    bool isMyth = widget.lesson.category == "Myth";
+    bool isVideo = widget.lesson.category.toLowerCase().contains("video");
+    bool isMyth = widget.lesson.category.toLowerCase().contains("myth") || widget.lesson.category.toLowerCase().contains("mitos");
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(flexibleSpace: Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [AppColors.primaryBlue, AppColors.primaryDarkBlue]))), title: Text(widget.lesson.title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)), iconTheme: const IconThemeData(color: Colors.white)),
       body: Stack(children: [
         SingleChildScrollView(child: Column(children: [
-          if (isVideo && yt != null) YoutubePlayer(controller: yt!) else Image.asset(widget.lesson.image, height: 250, fit: BoxFit.contain),
+          if (widget.lesson.category.toLowerCase().contains("video") && yt != null) YoutubePlayer(controller: yt!) else Image.asset(widget.lesson.image, height: 250, fit: BoxFit.contain),
           Padding(padding: const EdgeInsets.all(25), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             if(isVideo) _buildTimerUI(),
             if(isVideo) Padding(
@@ -434,7 +494,7 @@ class _LessonScreenState extends State<LessonScreen> {
             if (isMyth) _buildFlipCard() else RichText(text: widget.lesson.parsedContent),
             
             // 🚀 AI LINK BUTTON (For Core Lessons)
-            if (widget.lesson.category == "Core") 
+            if (widget.lesson.category.toLowerCase().contains("core") || widget.lesson.category.toLowerCase().contains("asas")) 
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: InkWell(

@@ -209,12 +209,19 @@ class ChatProvider extends ChangeNotifier {
         input.contains('masa') || input.contains('waktu') || input.contains('buka') ||
         input.contains('branch') || input.contains('cawangan') || input.contains('info')) {
        return "🏥 Klinik Pergigian Dr. Karthi\n\n"
-          "📍 Branch 1:\n234A, Jalan Bercham, Taman Ria, 31400, Ipoh, Perak.\n\n"
-          "📍 Branch 2:\nNo 42 Lapangan Perdana 10, Panorama Lapangan Perdana, Bandar Cyber, 31350 Ipoh, Perak.\n\n"
-          "⏰ Hours:\n• 9am - 5pm (Mon - Sat)\n• 6pm - 9pm (Mon - Fri)\n\n"
-          "📞 Call us:\n011-27428349 / 012-4938343";
+          "📍 Branch 1:\n234A, Jalan Bercham, Taman Ria, 31400, Ipoh, Perak.\n"
+          "⏰ 9am - 5pm (Mon - Fri)\n"
+          "⏰ 9am - 4pm (Sat)\n"
+          "📞 011-27428349\n\n"
+          "📍 Branch 2:\nNo 42 Lapangan Perdana 10, Panorama Lapangan Perdana, Bandar Cyber, 31350 Ipoh, Perak.\n"
+          "⏰ 6pm - 9pm (Mon - Fri)\n"
+          "📞 012-4938343";
     }
-    if (input.contains('book') || input.contains('appointment') || input.contains('temu janji') || input.contains('whatsapp')) return "📅 To book an appointment, please Call or WhatsApp us at:\n\n📞 011-27428349\n📞 012-4938343";
+    if (input.contains('book') || input.contains('appointment') || input.contains('temu janji') || input.contains('whatsapp')) {
+      return "📅 To book an appointment, please Call or WhatsApp:\n\n"
+          "📍 Branch 1 (Bercham):\n📞 011-27428349\n\n"
+          "📍 Branch 2 (Bandar Cyber):\n📞 012-4938343";
+    }
     if (input.contains('price') || input.contains('cost') || input.contains('harga') || input.contains('how much') || input.contains('bayar')) return "💰 For price details, please contact the clinic directly so we can give you the best info!\n\n📞 011-27428349";
     if (input.contains('klinik') || input.contains('doktor') || input.contains('karthi')) return "Klinik Dr. Karthi sedia membantu! 🏥\n\n📍 Kami ada di Bercham & Bandar Cyber Ipoh.\n📞 Hubungi: 011-27428349";
     if (input.contains('gosok') || input.contains('berus')) return "Gosok gigi 2 kali sehari! 🔄\n1. Guna ubat gigi sikit.\n2. Gosok bulat-bulat.\n3. Jangan lupa gosok lidah! 👅";
