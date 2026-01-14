@@ -237,8 +237,9 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
       // Filter for featured lessons (Videos, Myths, Core)
       _discoveryLessons = allLessons.where((lesson) =>
-        lesson.category == "Video" ||
-        lesson.category == "Myth" ||
+        lesson.category.toLowerCase().contains("video") ||
+        lesson.category.toLowerCase().contains("myth") ||
+        lesson.category.toLowerCase().contains("mitos") ||
         lesson.id == "1" // "Meet Your Teeth"
       ).toList();
 
@@ -786,8 +787,8 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
     }
 
     String category = _featuredLesson!.category;
-    bool isVideo = category == "Video";
-    bool isMyth = category == "Myth";
+    bool isVideo = category.toLowerCase().contains("video");
+    bool isMyth = category.toLowerCase().contains("myth") || category.toLowerCase().contains("mitos");
 
     // 🎨 Dynamic Colors based on Category (Matches Learning Screen)
     List<Color> gradientColors;

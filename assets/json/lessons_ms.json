@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "category": "Core",
+    "category": "Asas Gigi",
     "title": "Kenali Gigi Anda!",
     "subtitle": "Temui wira senyuman anda 😁",
     "image": "assets/elearning/teeth_type.jpg",
@@ -9,7 +9,7 @@
   },
   {
     "id": "2",
-    "category": "Core",
+    "category": "Asas Gigi",
     "title": "Kaviti & Plak",
     "subtitle": "Kuman kecil yang boleh rosakkan gigi 🦠",
     "image": "assets/elearning/cavity_vs_healthy.png",
@@ -17,7 +17,7 @@
   },
   {
     "id": "3",
-    "category": "Myth",
+    "category": "Mitos & Fakta",
     "title": "Mitos Raksasa Gula 👹",
     "subtitle": "Mitos vs. Fakta: Adakah gula-gula satu-satunya penjahat?",
     "image": "assets/elearning/candy.png",
@@ -25,7 +25,7 @@
   },
   {
     "id": "4",
-    "category": "Mom",
+    "category": "Penjagaan Keluarga",
     "title": "Senyuman Istimewa Ibu ✨",
     "subtitle": "Misi: Lindungi Gusi Ibu",
     "image": "assets/elearning/gum.jpg",
@@ -42,7 +42,7 @@
   },
   {
     "id": "6",
-    "category": "Core",
+    "category": "Asas Gigi",
     "title": "Kalkulus (Karang Gigi)",
     "subtitle": "Plak keras yang perlu dijaga 🧱",
     "image": "assets/elearning/plaque_calculus.png",
@@ -50,7 +50,7 @@
   },
   {
     "id": "7",
-    "category": "Myth",
+    "category": "Mitos & Fakta",
     "title": "Mitos Berus 'Keras' 🪥",
     "subtitle": "Mitos vs. Fakta: Kuasa menggosok!",
     "image": "assets/elearning/scrubteeth.png",
@@ -58,7 +58,7 @@
   },
   {
     "id": "8",
-    "category": "Mom",
+    "category": "Penjagaan Keluarga",
     "title": "Pembina Gigi Kuat 🥦",
     "subtitle": "Makan untuk dua (dan untuk gigi!)",
     "image": "assets/elearning/calcium.png",
@@ -75,7 +75,7 @@
   },
   {
     "id": "10",
-    "category": "Core",
+    "category": "Asas Gigi",
     "title": "Kotoran & Perubahan Warna",
     "subtitle": "Pastikan senyuman cerah ✨",
     "image": "assets/elearning/stains.png",
@@ -83,7 +83,7 @@
   },
   {
     "id": "11",
-    "category": "Myth",
+    "category": "Mitos & Fakta",
     "title": "Gigi Bayi Tak Penting? 👶",
     "subtitle": "Mitos vs. Fakta: Pasukan Pertama",
     "image": "assets/elearning/babytooth.png",
@@ -91,7 +91,7 @@
   },
   {
     "id": "12",
-    "category": "Mom",
+    "category": "Penjagaan Keluarga",
     "title": "Helah Loya Pagi 🧼",
     "subtitle": "Lindungi gigi dari 'Asid Perut' 🤢",
     "image": "assets/elearning/mom.png",
@@ -99,7 +99,7 @@
   },
   {
     "id": "13",
-    "category": "Core",
+    "category": "Asas Gigi",
     "title": "Tabiat Sihat untuk Gigi Gembira",
     "subtitle": "Jadi Juara Senyuman 🏆",
     "image": "assets/elearning/healthy_teeth.png",
