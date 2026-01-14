@@ -36,6 +36,23 @@ class LanguageSelectionScreen extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(Icons.health_and_safety, size: 100, color: Colors.white),
                   ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'ToothyMate',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 40),
             
                   const Text(
