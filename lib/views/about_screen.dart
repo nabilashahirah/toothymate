@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/sound_manager.dart';
 
 // --- THEME COLORS (Synced with Home Screen) ---
 class AppColors {
@@ -189,6 +190,8 @@ class _LanguageSelector extends StatelessWidget {
                       flag: 'EN',
                       isSelected: isEnglish,
                       onTap: () async {
+                        SoundManager.playPop(); // Add sound effect
+
                         await context.setLocale(const Locale('en'));
 
                         // Save language preference
@@ -220,6 +223,8 @@ class _LanguageSelector extends StatelessWidget {
                       flag: 'BM',
                       isSelected: !isEnglish,
                       onTap: () async {
+                        SoundManager.playPop(); // Add sound effect
+
                         await context.setLocale(const Locale('ms'));
 
                         // Save language preference
