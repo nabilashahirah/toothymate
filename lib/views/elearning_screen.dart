@@ -346,21 +346,41 @@ class _LessonScreenState extends State<LessonScreen> {
   int time = 120; bool active = false; Timer? _t;
   bool isSpeaking = false;
 
-  final Map<String, Map<String, dynamic>> lessonQuizzes = {
-    "1": {"q": "Which teeth act like scissors to cut food?", "a": ["Molars", "Incisors", "Canines"], "correct": "Incisors"},
-    "2": {"q": "What is the sticky layer germs build on teeth?", "a": ["Pulp", "Plaque", "Enamel"], "correct": "Plaque"},
-    "3": {"q": "True or False: Candy is the only food that causes cavities.", "a": ["True", "False"], "correct": "False"},
-    "4": {"q": "What brush should Mom use if her gums are sore?", "a": ["Hard Brush", "Extra Hard", "Soft Brush"], "correct": "Soft Brush"},
-    "5": {"q": "How long should a champion brush their teeth?", "a": ["1 Minute", "2 Minutes", "5 Minutes"], "correct": "2 Minutes"},
-    "6": {"q": "What happens when plaque turns hard as stone?", "a": ["It becomes Calculus", "It disappears", "It stays soft"], "correct": "It becomes Calculus"},
-    "7": {"q": "Is brushing harder better for your teeth?", "a": ["Yes", "No, it hurts enamel"], "correct": "No, it hurts enamel"},
-    "8": {"q": "Which food helps build the baby's tooth armor?", "a": ["Potato Chips", "Milk & Yogurt", "Chocolate"], "correct": "Milk & Yogurt"},
-    "9": {"q": "What shape should floss make around a tooth?", "a": ["O Shape", "X Shape", "C Shape"], "correct": "C Shape"},
-    "10": {"q": "Who is the only person who can remove hard Calculus?", "a": ["You", "Your Mom", "A Dentist"], "correct": "A Dentist"},
-    "11": {"q": "Why are baby teeth called 'Seat Savers'?", "a": ["They save a chair", "They hold space for adult teeth"], "correct": "They hold space for adult teeth"},
-    "12": {"q": "What is the 'Magic Rinse' for Mom's teeth?", "a": ["Fruit Juice", "Water & Baking Soda"], "correct": "Water & Baking Soda"},
-    "13": {"q": "What is the best way to keep teeth shiny today?", "a": ["Only eating sweets", "Brushing twice a day", "Not brushing"], "correct": "Brushing twice a day"},
-  };
+  Map<String, Map<String, dynamic>> _getQuizzes() {
+    bool isMalay = context.locale.languageCode == 'ms';
+    if (isMalay) {
+      return {
+        "1": {"q": "Gigi manakah yang bertindak seperti gunting untuk memotong makanan?", "a": ["Geraham", "Kacip", "Taring"], "correct": "Kacip"},
+        "2": {"q": "Apakah lapisan melekit yang dibina oleh kuman pada gigi?", "a": ["Pulpa", "Plak", "Enamel"], "correct": "Plak"},
+        "3": {"q": "Betul atau Salah: Gula-gula adalah satu-satunya makanan yang menyebabkan gigi berlubang.", "a": ["Betul", "Salah"], "correct": "Salah"},
+        "4": {"q": "Berus apakah yang patut Ibu gunakan jika gusinya sakit?", "a": ["Berus Keras", "Sangat Keras", "Berus Lembut"], "correct": "Berus Lembut"},
+        "5": {"q": "Berapa lamakah seorang juara perlu memberus gigi?", "a": ["1 Minit", "2 Minit", "5 Minit"], "correct": "2 Minit"},
+        "6": {"q": "Apakah yang berlaku apabila plak menjadi keras seperti batu?", "a": ["Ia menjadi Karang Gigi", "Ia hilang", "Ia kekal lembut"], "correct": "Ia menjadi Karang Gigi"},
+        "7": {"q": "Adakah memberus dengan lebih kuat lebih baik untuk gigi anda?", "a": ["Ya", "Tidak, ia merosakkan enamel"], "correct": "Tidak, ia merosakkan enamel"},
+        "8": {"q": "Makanan manakah yang membantu membina perisai gigi bayi?", "a": ["Kerepek Kentang", "Susu & Yogurt", "Coklat"], "correct": "Susu & Yogurt"},
+        "9": {"q": "Apakah bentuk yang perlu dibuat oleh flos di sekeliling gigi?", "a": ["Bentuk O", "Bentuk X", "Bentuk C"], "correct": "Bentuk C"},
+        "10": {"q": "Siapakah satu-satunya orang yang boleh membuang Karang Gigi yang keras?", "a": ["Anda", "Ibu Anda", "Doktor Gigi"], "correct": "Doktor Gigi"},
+        "11": {"q": "Mengapa gigi susu dipanggil 'Penyimpan Tempat'?", "a": ["Mereka simpan kerusi", "Mereka pegang ruang untuk gigi kekal"], "correct": "Mereka pegang ruang untuk gigi kekal"},
+        "12": {"q": "Apakah 'Kumuran Ajaib' untuk gigi Ibu?", "a": ["Jus Buah", "Air & Soda Penaik"], "correct": "Air & Soda Penaik"},
+        "13": {"q": "Apakah cara terbaik untuk memastikan gigi berkilat hari ini?", "a": ["Hanya makan manis", "Memberus dua kali sehari", "Tidak memberus"], "correct": "Memberus dua kali sehari"},
+      };
+    }
+    return {
+      "1": {"q": "Which teeth act like scissors to cut food?", "a": ["Molars", "Incisors", "Canines"], "correct": "Incisors"},
+      "2": {"q": "What is the sticky layer germs build on teeth?", "a": ["Pulp", "Plaque", "Enamel"], "correct": "Plaque"},
+      "3": {"q": "True or False: Candy is the only food that causes cavities.", "a": ["True", "False"], "correct": "False"},
+      "4": {"q": "What brush should Mom use if her gums are sore?", "a": ["Hard Brush", "Extra Hard", "Soft Brush"], "correct": "Soft Brush"},
+      "5": {"q": "How long should a champion brush their teeth?", "a": ["1 Minute", "2 Minutes", "5 Minutes"], "correct": "2 Minutes"},
+      "6": {"q": "What happens when plaque turns hard as stone?", "a": ["It becomes Calculus", "It disappears", "It stays soft"], "correct": "It becomes Calculus"},
+      "7": {"q": "Is brushing harder better for your teeth?", "a": ["Yes", "No, it hurts enamel"], "correct": "No, it hurts enamel"},
+      "8": {"q": "Which food helps build the baby's tooth armor?", "a": ["Potato Chips", "Milk & Yogurt", "Chocolate"], "correct": "Milk & Yogurt"},
+      "9": {"q": "What shape should floss make around a tooth?", "a": ["O Shape", "X Shape", "C Shape"], "correct": "C Shape"},
+      "10": {"q": "Who is the only person who can remove hard Calculus?", "a": ["You", "Your Mom", "A Dentist"], "correct": "A Dentist"},
+      "11": {"q": "Why are baby teeth called 'Seat Savers'?", "a": ["They save a chair", "They hold space for adult teeth"], "correct": "They hold space for adult teeth"},
+      "12": {"q": "What is the 'Magic Rinse' for Mom's teeth?", "a": ["Fruit Juice", "Water & Baking Soda"], "correct": "Water & Baking Soda"},
+      "13": {"q": "What is the best way to keep teeth shiny today?", "a": ["Only eating sweets", "Brushing twice a day", "Not brushing"], "correct": "Brushing twice a day"},
+    };
+  }
 
   Locale? _currentLocale;
 
@@ -422,19 +442,20 @@ class _LessonScreenState extends State<LessonScreen> {
 
   void _showQuizDialog() {
     String? err;
-    if (!lessonQuizzes.containsKey(widget.lesson.id)) { _finish(); return; }
+    final quizzes = _getQuizzes();
+    if (!quizzes.containsKey(widget.lesson.id)) { _finish(); return; }
     showDialog(context: context, barrierDismissible: false, builder: (c) => StatefulBuilder(builder: (c, state) => AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       title: Text("knowledgeCheck".tr(), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
       content: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(lessonQuizzes[widget.lesson.id]!['q'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
+        Text(quizzes[widget.lesson.id]!['q'], textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
         if(err != null) Padding(padding: const EdgeInsets.only(top: 10), child: Text(err!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold))),
         const SizedBox(height: 25),
-        ... (lessonQuizzes[widget.lesson.id]!['a'] as List).map((o) => Padding(
+        ... (quizzes[widget.lesson.id]!['a'] as List).map((o) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: SizedBox(width: double.infinity, height: 50, child: ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-            onPressed: (){ SoundManager.playPop(); if(o == lessonQuizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "notQuiteTryAgain".tr()); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+            onPressed: (){ SoundManager.playPop(); if(o == quizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "notQuiteTryAgain".tr()); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
         ))
       ]),
     )));
@@ -444,7 +465,9 @@ class _LessonScreenState extends State<LessonScreen> {
     final prefs = await SharedPreferences.getInstance();
     List<String> done = prefs.getStringList('completed_lessons') ?? [];
     if (!done.contains(widget.lesson.id)) { done.add(widget.lesson.id); await prefs.setStringList('completed_lessons', done); }
-    _confetti.play(); sfx.play(AssetSource('audio/yahoo.mp3'));
+    _confetti.play();
+    await sfx.stop();
+    sfx.play(AssetSource('audio/yahoo.mp3'));
     if(mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("heroProgressSaved".tr()), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating, margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 20)));
   }
 
@@ -462,7 +485,7 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   @override
-  void dispose() { _t?.cancel(); _confetti.dispose(); tts.stop(); yt?.dispose(); music.dispose(); super.dispose(); }
+  void dispose() { _t?.cancel(); _confetti.dispose(); tts.stop(); yt?.dispose(); music.dispose(); sfx.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
