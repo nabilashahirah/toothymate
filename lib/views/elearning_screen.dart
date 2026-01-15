@@ -525,7 +525,7 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
 
             const SizedBox(height: 40),
-            Center(child: ElevatedButton.icon(onPressed: () { SoundManager.playPop(); _showQuizDialog(); }, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("I Learned This! 🌟", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
+            Center(child: ElevatedButton.icon(onPressed: () { SoundManager.playPop(); _showQuizDialog(); }, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("iLearnedThis".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
             const SizedBox(height: 50),
           ])),
         ])),
@@ -548,13 +548,26 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   Widget _buildFlipCard() {
-    List<String> parts = widget.lesson.content.split("✅ **The Fact:**");
+    String content = widget.lesson.content;
+    String factPart = "...";
+    String mythPart = content;
+
+    if (content.contains("✅ **The Fact:**")) {
+      List<String> parts = content.split("✅ **The Fact:**");
+      mythPart = parts[0].replaceAll("❌ **The Myth:**", "");
+      if (parts.length > 1) factPart = parts[1];
+    } else if (content.contains("✅ **Fakta:**")) {
+      List<String> parts = content.split("✅ **Fakta:**");
+      mythPart = parts[0].replaceAll("❌ **Mitos:**", "");
+      if (parts.length > 1) factPart = parts[1];
+    }
+
     return Column(children: [
-      const Text("Tap to reveal the truth! 👇", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+      Text("tapToReveal".tr(), style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
       const SizedBox(height: 15),
       FlipCard(
-        front: _cardFace(title: "MYTH ❌", text: parts[0].replaceAll("❌ **The Myth:**", "").trim(), color: Colors.redAccent.withOpacity(0.05), borderColor: Colors.redAccent),
-        back: _cardFace(title: "FACT ✅", text: parts.length > 1 ? parts[1].trim() : "...", color: Colors.green.withOpacity(0.05), borderColor: Colors.green),
+        front: _cardFace(title: "${"myth".tr().toUpperCase()} ❌", text: mythPart.trim(), color: Colors.redAccent.withOpacity(0.05), borderColor: Colors.redAccent),
+        back: _cardFace(title: "${"fact".tr().toUpperCase()} ✅", text: factPart.trim(), color: Colors.green.withOpacity(0.05), borderColor: Colors.green),
       ),
     ]);
   }
