@@ -10,6 +10,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../services/sound_manager.dart';
 import 'ai_scan_screen.dart';
 
 // --- App Colors & Styles ---
@@ -154,7 +155,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
               Text("completedEveryMission".tr(), textAlign: TextAlign.center),
               const SizedBox(height: 25),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () { SoundManager.playPop(); Navigator.pop(context); },
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                 child: Text("imAPro".tr(), style: const TextStyle(color: Colors.white)),
               )
@@ -179,32 +180,37 @@ class _ElearningScreenState extends State<ElearningScreen> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(25),
         decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("achievementGallery".tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            GridView.count(
-              shrinkWrap: true, crossAxisCount: 2, mainAxisSpacing: 15, crossAxisSpacing: 15, childAspectRatio: 1.2,
-              children: stats.entries.map((e) {
-                bool isDone = e.value > 0;
-                return Container(
-                  decoration: BoxDecoration(color: isDone ? Colors.white : Colors.grey.shade100, borderRadius: BorderRadius.circular(20), border: Border.all(color: isDone ? AppColors.primaryDarkBlue : Colors.transparent, width: 2)),
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(_getIcon(e.key), color: isDone ? _getColor(e.key) : Colors.grey, size: 40),
-                    const SizedBox(height: 8),
-                    Text(_getCategoryTranslationKey(e.key).tr(), style: TextStyle(fontWeight: FontWeight.bold, color: isDone ? Colors.black : Colors.grey)),
-                    Text("${e.value} ${"done".tr()}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  ]),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("achievementGallery".tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2, mainAxisSpacing: 15, crossAxisSpacing: 15, childAspectRatio: 1.2,
+                children: stats.entries.map((e) {
+                  bool isDone = e.value > 0;
+                  return Container(
+                    decoration: BoxDecoration(color: isDone ? Colors.white : Colors.grey.shade100, borderRadius: BorderRadius.circular(20), border: Border.all(color: isDone ? AppColors.primaryDarkBlue : Colors.transparent, width: 2)),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Icon(_getIcon(e.key), color: isDone ? _getColor(e.key) : Colors.grey, size: 40),
+                      const SizedBox(height: 8),
+                      Text(_getCategoryTranslationKey(e.key).tr(), style: TextStyle(fontWeight: FontWeight.bold, color: isDone ? Colors.black : Colors.grey)),
+                      Text("${e.value} ${"done".tr()}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    ]),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -268,9 +274,9 @@ class _ElearningScreenState extends State<ElearningScreen> {
           ? TextField(controller: _searchController, autofocus: true, style: const TextStyle(color: Colors.white), decoration: InputDecoration(hintText: "searchForAMission".tr(), border: InputBorder.none, hintStyle: const TextStyle(color: Colors.white60)), onChanged: (v) => _applyFilter())
           : Text("knowledgeHub".tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
-          IconButton(icon: Icon(isSearching ? Icons.close : Icons.search), onPressed: () => setState(() { isSearching = !isSearching; if(!isSearching) { _searchController.clear(); _applyFilter(); } })),
-          IconButton(icon: const Icon(Icons.emoji_events_outlined), onPressed: _showBadgeGallery),
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _showResetDialog),
+          IconButton(icon: Icon(isSearching ? Icons.close : Icons.search), onPressed: () { SoundManager.playPop(); setState(() { isSearching = !isSearching; if(!isSearching) { _searchController.clear(); _applyFilter(); } }); }),
+          IconButton(icon: const Icon(Icons.emoji_events_outlined), onPressed: () { SoundManager.playPop(); _showBadgeGallery(); }),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: () { SoundManager.playPop(); _showResetDialog(); }),
         ],
       ),
       body: Column(children: [
@@ -282,7 +288,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
   }
 
   void _showResetDialog() {
-    showDialog(context: context, builder: (c) => AlertDialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), title: Text("resetProgress".tr()), content: Text("clearStarsAndBadges".tr()), actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text("no".tr())), TextButton(onPressed: () async { (await SharedPreferences.getInstance()).remove('completed_lessons'); setState(() => completedIds = []); Navigator.pop(c); _applyFilter(); }, child: Text("yesReset".tr(), style: const TextStyle(color: Colors.red)))]));
+    showDialog(context: context, builder: (c) => AlertDialog(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), title: Text("resetProgress".tr()), content: Text("clearStarsAndBadges".tr()), actions: [TextButton(onPressed: () { SoundManager.playPop(); Navigator.pop(c); }, child: Text("no".tr())), TextButton(onPressed: () async { SoundManager.playPop(); (await SharedPreferences.getInstance()).remove('completed_lessons'); setState(() => completedIds = []); Navigator.pop(c); _applyFilter(); }, child: Text("yesReset".tr(), style: const TextStyle(color: Colors.red)))]));
   }
 
   Widget _buildFilterBar() {
@@ -290,7 +296,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
     Set<String> uniqueCategories = allLessons.map((lesson) => lesson.category).toSet();
     List<String> categories = ["All", ...uniqueCategories.toList()];
 
-    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: categories.map((category) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(category == "All" ? "all".tr() : _getCategoryTranslationKey(category).tr()), selected: selectedCategory == category, onSelected: (v) { setState(() { selectedCategory = v ? category : "All"; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == category ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
+    return SizedBox(height: 70, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15), children: categories.map((category) => Padding(padding: const EdgeInsets.only(right: 10), child: ChoiceChip(label: Text(category == "All" ? "all".tr() : _getCategoryTranslationKey(category).tr()), selected: selectedCategory == category, onSelected: (v) { SoundManager.playPop(); setState(() { selectedCategory = v ? category : "All"; _applyFilter(); }); }, selectedColor: AppColors.primaryDarkBlue, backgroundColor: Colors.white, showCheckmark: false, labelStyle: TextStyle(color: selectedCategory == category ? Colors.white : AppColors.primaryDarkBlue, fontWeight: FontWeight.bold)))).toList()));
   }
 
   Widget _buildProgressHeader() {
@@ -304,7 +310,7 @@ class _ElearningScreenState extends State<ElearningScreen> {
       final colors = _getColors(l.category);
       final done = completedIds.contains(l.id);
       return Stack(clipBehavior: Clip.none, children: [
-        Container(margin: const EdgeInsets.only(bottom: 30), height: 140, decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), gradient: LinearGradient(colors: colors), boxShadow: [BoxShadow(color: colors.last.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))]), child: Material(color: Colors.transparent, child: InkWell(borderRadius: BorderRadius.circular(25), onTap: () async { await Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: l))); loadData(); }, child: Padding(padding: const EdgeInsets.all(20), child: Row(children: [ Container(width: 80, height: 80, decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(15)), child: ClipRRect(borderRadius: BorderRadius.circular(15), child: l.category.toLowerCase().contains("video") ? const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 50) : Image.asset(l.image, fit: BoxFit.cover))), const SizedBox(width: 15), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)), Text(l.subtitle, maxLines: 2, style: const TextStyle(color: Colors.white70, fontSize: 13))])), Icon(done ? Icons.stars_rounded : Icons.arrow_forward_ios, color: done ? Colors.amber : Colors.white)]))))),
+        Container(margin: const EdgeInsets.only(bottom: 30), height: 140, decoration: BoxDecoration(borderRadius: BorderRadius.circular(25), gradient: LinearGradient(colors: colors), boxShadow: [BoxShadow(color: colors.last.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))]), child: Material(color: Colors.transparent, child: InkWell(borderRadius: BorderRadius.circular(25), onTap: () async { SoundManager.playPop(); await Navigator.push(context, MaterialPageRoute(builder: (_) => LessonScreen(lesson: l))); loadData(); }, child: Padding(padding: const EdgeInsets.all(20), child: Row(children: [ Container(width: 80, height: 80, decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(15)), child: ClipRRect(borderRadius: BorderRadius.circular(15), child: l.category.toLowerCase().contains("video") ? const Icon(Icons.play_circle_fill, color: Colors.redAccent, size: 50) : Image.asset(l.image, fit: BoxFit.cover))), const SizedBox(width: 15), Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)), Text(l.subtitle, maxLines: 2, style: const TextStyle(color: Colors.white70, fontSize: 13))])), Icon(done ? Icons.stars_rounded : Icons.arrow_forward_ios, color: done ? Colors.amber : Colors.white)]))))),
         Positioned(top: -12, left: 15, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]), child: Text(_getCategoryTranslationKey(l.category).tr().toUpperCase(), style: TextStyle(color: colors.first, fontWeight: FontWeight.bold, fontSize: 10)))),
       ]);
     });
@@ -428,7 +434,7 @@ class _LessonScreenState extends State<LessonScreen> {
           padding: const EdgeInsets.only(bottom: 10),
           child: SizedBox(width: double.infinity, height: 50, child: ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-            onPressed: (){ if(o == lessonQuizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "notQuiteTryAgain".tr()); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
+            onPressed: (){ SoundManager.playPop(); if(o == lessonQuizzes[widget.lesson.id]!['correct']) { Navigator.pop(c); _finish(); } else { HapticFeedback.vibrate(); state(() => err = "notQuiteTryAgain".tr()); } }, child: Text(o, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)))),
         ))
       ]),
     )));
@@ -482,6 +488,7 @@ class _LessonScreenState extends State<LessonScreen> {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Expanded(child: Text(widget.lesson.subtitle, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryDarkBlue))),
               if (!isVideo) IconButton(icon: Icon(isSpeaking ? Icons.stop_circle : Icons.volume_up_rounded, color: AppColors.primaryDarkBlue, size: 35), onPressed: () {
+                SoundManager.playPop();
                 if (isSpeaking) { tts.stop(); setState(() => isSpeaking = false); }
                 else {
                   String contentToSpeak = _removeEmojis(widget.lesson.content.replaceAll("**", ""));
@@ -498,7 +505,7 @@ class _LessonScreenState extends State<LessonScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: InkWell(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ToothScanScreen())),
+                  onTap: () { SoundManager.playPop(); Navigator.push(context, MaterialPageRoute(builder: (_) => const ToothScanScreen())); },
                   borderRadius: BorderRadius.circular(15),
                   child: Container(
                     padding: const EdgeInsets.all(15),
@@ -518,7 +525,7 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
 
             const SizedBox(height: 40),
-            Center(child: ElevatedButton.icon(onPressed: _showQuizDialog, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("I Learned This! 🌟", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
+            Center(child: ElevatedButton.icon(onPressed: () { SoundManager.playPop(); _showQuizDialog(); }, icon: const Icon(Icons.auto_awesome, color: Colors.white), label: Text("I Learned This! 🌟", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryDarkBlue, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))))),
             const SizedBox(height: 50),
           ])),
         ])),
@@ -535,7 +542,7 @@ class _LessonScreenState extends State<LessonScreen> {
         Stack(alignment: Alignment.center, children: [SizedBox(width: 60, height: 60, child: CircularProgressIndicator(value: time/120, color: AppColors.primaryDarkBlue, backgroundColor: Colors.white)), Text("${time~/60}:${(time%60).toString().padLeft(2,'0')}", style: const TextStyle(fontWeight: FontWeight.bold))]),
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(isFloss ? "flossAlong".tr() : "brushAlong".tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), Text(active ? "doingGreat".tr() : "readyTapPlay".tr())])),
-        IconButton(icon: Icon(active ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 50, color: AppColors.primaryDarkBlue), onPressed: _toggleTimer),
+        IconButton(icon: Icon(active ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 50, color: AppColors.primaryDarkBlue), onPressed: () { SoundManager.playPop(); _toggleTimer(); }),
       ])),
     ]);
   }

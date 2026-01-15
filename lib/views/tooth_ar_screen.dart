@@ -20,6 +20,7 @@ import 'package:confetti/confetti.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../services/sound_manager.dart';
 
 class ToothARScreen extends StatefulWidget {
   const ToothARScreen({super.key});
@@ -626,8 +627,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
                           return GestureDetector(
                             onTap: () async {
                               // 🔊 Play pop sound
-                              _audioPlayer.stop().then((_) => 
-                                _audioPlayer.play(AssetSource('audio/pop.mp3'), mode: PlayerMode.lowLatency));
+                              SoundManager.playPop();
                               
                               // Haptic feedback
                               HapticFeedback.mediumImpact();
@@ -844,6 +844,7 @@ class _ToothARScreenState extends State<ToothARScreen> with SingleTickerProvider
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  SoundManager.playPop();
                   _flutterTts.stop(); // Stop voice when closing manually
                   Navigator.pop(context);
                 },

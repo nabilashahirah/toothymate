@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.toothymate_app_4"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -35,10 +35,31 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+// Force all subprojects (plugins) to use the same compileSdk to avoid "android:attr/lStar not found" errors
+rootProject.subprojects {
+    afterEvaluate {
+        val android = extensions.findByName("android")
+        if (android != null) {
+            try {
+                val setCompileSdk = android.javaClass.getMethod("setCompileSdk", Int::class.javaPrimitiveType)
+                setCompileSdk.invoke(android, 36)
+            } catch (e: Exception) {
+                try {
+                    val setCompileSdkVersion = android.javaClass.getMethod("setCompileSdkVersion", Int::class.javaPrimitiveType)
+                    setCompileSdkVersion.invoke(android, 36)
+                } catch (e2: Exception) {
+                    // Ignore
+                }
+            }
+        }
+    }
 }
