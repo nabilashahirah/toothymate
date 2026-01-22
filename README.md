@@ -20,6 +20,11 @@
 - **Health Checks:** Detects potential cavities, plaque, calculus (tartar), and stains.
 - **Instant Feedback:** Helps users identify areas that need better brushing.
 
+### 💬 AI Dental Buddy (Powered by Gemini)
+- **Ask Anything:** Kids can ask questions like "Why do teeth fall out?"
+- **Safe & Educational:** Tuned to provide child-friendly dental facts.
+- **24/7 Support:** Instant answers for parents about basic oral hygiene.
+
 ### 🤰 Mom's Special Section
 - **Pregnancy Care:** Tips on preventing Pregnancy Gingivitis.
 - **Baby Teeth:** Guide on "Teeth Builders" (nutrition) and morning sickness care.

@@ -318,5 +318,6 @@
   "chatTutorialDesc": "Ask our AI assistant anything about your teeth!",
   "missionTutorialDesc": "Complete these daily to keep your streak alive!",
   "scannerTutorialDesc": "Tap here to scan your teeth for sugar bugs!",
-  "trophyTutorialDesc": "Earn badges by brushing early and learning!"
+  "trophyTutorialDesc": "Earn badges by brushing early and learning!",
+  "aiChatDisclaimer": "I am a dental buddy, not a doctor! Always ask Dr. Karthi for medical help."
 }

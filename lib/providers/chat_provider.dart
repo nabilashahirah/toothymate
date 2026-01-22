@@ -5,6 +5,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/gemini_service.dart';
 import '../services/tts_service.dart';
+import '../services/firebase_service.dart';
 
 class ChatProvider extends ChangeNotifier {
   final GeminiService _geminiService = GeminiService();
@@ -83,6 +84,15 @@ class ChatProvider extends ChangeNotifier {
   Future<void> _saveChatHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('chat_history', jsonEncode(_messages));
+
+    // 🔥 Also save last message to Firebase
+    if (_messages.isNotEmpty) {
+      final lastMsg = _messages.last;
+      await FirebaseService().saveChatMessage(
+        lastMsg['sender'] ?? '',
+        lastMsg['text'] ?? '',
+      );
+    }
   }
 
   void resetCelebrate() {
@@ -163,6 +173,9 @@ class ChatProvider extends ChangeNotifier {
   Future<void> clearChat() async {
     _ttsService.stop();
     _messages.clear();
+
+    // 🔥 Clear Firebase chat history
+    await FirebaseService().clearChatHistory();
 
     // Get current language
     final prefs = await SharedPreferences.getInstance();

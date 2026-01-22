@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "774362293278",
+    "project_id": "toothymate",
+    "storage_bucket": "toothymate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774362293278:android:e7c21ddb44945123a4fa0f",
+        "android_client_info": {
+          "package_name": "com.example.toothymate_app_4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc7vEZ3GQSN7ynrE_R_t2DQnPJmR1bLhc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
