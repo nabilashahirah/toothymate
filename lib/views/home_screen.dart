@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:confetti/confetti.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../services/sound_manager.dart';
+import '../services/firebase_service.dart';
 import 'about_screen.dart';
 import 'user_manual_screen.dart';
 import 'elearning_screen.dart';
@@ -356,7 +357,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
     await prefs.setBool(key, true);
     int currentXp = prefs.getInt('user_xp') ?? 0;
     await prefs.setInt('user_xp', currentXp + 20);
-    
+
     // 🔥 UPDATED: Only increment streak if BOTH missions are done
     bool m = prefs.getBool('morning_brush') ?? false;
     bool n = prefs.getBool('night_brush') ?? false;
@@ -370,20 +371,37 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
         await prefs.setString('last_brush_date', today);
       }
     }
-    
+
     await _loadData();
-    
+
+    // 🔥 Sync to Firebase
+    _syncToFirebase();
+
     if (!mounted) return; // 🛡️ Safety Check
-    SoundManager.playPop(); 
-    
+    SoundManager.playPop();
+
     if (_morningBrush && _nightBrush) {
-       _confettiController.play(); 
+       _confettiController.play();
        await Future.delayed(const Duration(milliseconds: 500));
        if (!mounted) return; // 🛡️ Safety Check
       _playSound('audio/yahoo.mp3');
     }
-    
+
     if (_level > oldLevel) _showLevelUpDialog(_level);
+  }
+
+  // 🔥 Firebase Sync Helper
+  Future<void> _syncToFirebase() async {
+    final prefs = await SharedPreferences.getInstance();
+    await FirebaseService().saveUserData(
+      userName: prefs.getString('user_name') ?? 'Hero',
+      xp: prefs.getInt('user_xp') ?? 0,
+      streak: prefs.getInt('streak_count') ?? 0,
+      morningBrush: prefs.getBool('morning_brush') ?? false,
+      nightBrush: prefs.getBool('night_brush') ?? false,
+      lastBrushDate: prefs.getString('last_brush_date') ?? '',
+      completedLessons: prefs.getStringList('completed_lessons') ?? [],
+    );
   }
 
   // --- POPUPS & SNACKBARS ---
@@ -485,6 +503,7 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
               await prefs.setString('user_name', nameController.text.trim().isEmpty ? "Hero" : nameController.text.trim());
               if (mounted) Navigator.pop(context);
               _loadData();
+              _syncToFirebase(); // 🔥 Sync name change to Firebase
             },
             child: Text('save'.tr()),
           )

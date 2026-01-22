@@ -56,6 +56,11 @@ dependencies:
   http: ^1.2.0
   lottie: ^3.1.0  # For animated splash screen
 
+  # Firebase
+  firebase_core: ^3.8.1
+  cloud_firestore: ^5.6.0
+  firebase_auth: ^5.3.4
+
   #AR Punya 
   ar_flutter_plugin: any
   permission_handler: any
