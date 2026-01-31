@@ -319,5 +319,8 @@
   "missionTutorialDesc": "Complete these daily to keep your streak alive!",
   "scannerTutorialDesc": "Tap here to scan your teeth for sugar bugs!",
   "trophyTutorialDesc": "Earn badges by brushing early and learning!",
-  "aiChatDisclaimer": "I am a dental buddy, not a doctor! Always ask Dr. Karthi for medical help."
+  "aiChatDisclaimer": "I am a dental buddy, not a doctor! Always ask Dr. Karthi for medical help.",
+  "welcomeSubtitle": "Your friendly dental companion!",
+  "aiDentalBuddy": "AI Dental Buddy",
+  "whatYouCanDo": "What You Can Do"
 }
