@@ -1,10 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:audioplayers/audioplayers.dart'; 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'welcome_screens.dart'; 
+import 'welcome_screens.dart';
+import '../services/profile_service.dart'; 
 
 // --- THEME COLORS ---
 class AppColors {
@@ -104,14 +104,14 @@ class _UserManualScreenState extends State<UserManualScreen> with SingleTickerPr
     );
 
     if (confirm == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear(); 
+      // Reset only the current profile's data, not all profiles
+      await ProfileService.resetCurrentProfile();
 
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-          (route) => false, 
+          (route) => false,
         );
       }
     }
