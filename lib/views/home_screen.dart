@@ -4,18 +4,19 @@ import 'dart:math';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:easy_localization/easy_localization.dart'; // Add this
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:confetti/confetti.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../services/sound_manager.dart';
 import '../services/firebase_service.dart';
+import '../services/profile_service.dart';
 import 'about_screen.dart';
 import 'user_manual_screen.dart';
 import 'elearning_screen.dart';
 import 'ai_scan_screen.dart';
 import 'chat_screen.dart';
-import 'tooth_ar_screen.dart'; // Ensure this is imported
+import 'tooth_ar_screen.dart';
+import 'profile_selection_screen.dart';
 
 // --- APP THEME COLORS ---
 class AppColors {
@@ -76,12 +77,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Future<void> _checkTutorial() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool seen = prefs.getBool('home_tutorial_seen') ?? false;
+    bool seen = ProfileService.getBool('home_tutorial_seen') ?? false;
     if (!seen) {
       // Start tutorial
       _showTutorial();
-      await prefs.setBool('home_tutorial_seen', true);
+      await ProfileService.setBool('home_tutorial_seen', true);
     }
   }
 
@@ -264,19 +264,17 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
 
   // --- LOGIC: DAILY RESET & STREAK CHECK ---
   Future<void> _checkNewDayAndLoad() async {
-    final prefs = await SharedPreferences.getInstance();
-    
     String todayStr = DateTime.now().toIso8601String().split('T')[0];
     DateTime today = DateTime.parse(todayStr);
-    
-    String? lastBrushStr = prefs.getString('last_brush_date');
-    String? lastOpenStr = prefs.getString('last_open_date');
+
+    String? lastBrushStr = ProfileService.getString('last_brush_date');
+    String? lastOpenStr = ProfileService.getString('last_open_date');
 
     // Daily Reset
     if (lastOpenStr != todayStr) {
-      await prefs.setBool('morning_brush', false);
-      await prefs.setBool('night_brush', false);
-      await prefs.setString('last_open_date', todayStr);
+      await ProfileService.setBool('morning_brush', false);
+      await ProfileService.setBool('night_brush', false);
+      await ProfileService.setString('last_open_date', todayStr);
     }
 
     // Streak Reset Check (>1 day gap)
@@ -284,22 +282,21 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
       DateTime lastBrush = DateTime.parse(lastBrushStr);
       int daysDifference = today.difference(lastBrush).inDays;
       if (daysDifference > 1) {
-        await prefs.setInt('streak_count', 0);
+        await ProfileService.setInt('streak_count', 0);
       }
     }
     _loadData();
   }
 
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return; // 🛡️ Safety Check
+    if (!mounted) return;
     setState(() {
-      _userName = prefs.getString('user_name') ?? "Hero";
-      _morningBrush = prefs.getBool('morning_brush') ?? false;
-      _nightBrush = prefs.getBool('night_brush') ?? false;
-      _xp = prefs.getInt('user_xp') ?? 0;
-      _streak = prefs.getInt('streak_count') ?? 0;
-      List<String> finishedLessons = prefs.getStringList('completed_lessons') ?? [];
+      _userName = ProfileService.getString('user_name') ?? "Hero";
+      _morningBrush = ProfileService.getBool('morning_brush') ?? false;
+      _nightBrush = ProfileService.getBool('night_brush') ?? false;
+      _xp = ProfileService.getInt('user_xp') ?? 0;
+      _streak = ProfileService.getInt('streak_count') ?? 0;
+      List<String> finishedLessons = ProfileService.getStringList('completed_lessons') ?? [];
       _lessonsCompleted = finishedLessons.length;
     });
 
@@ -352,55 +349,53 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
   void _playSound(String path) async { try { await _audioPlayer.play(AssetSource(path)); } catch (e) {} }
 
   Future<void> _completeMission(String key) async {
-    final prefs = await SharedPreferences.getInstance();
     int oldLevel = _level;
-    await prefs.setBool(key, true);
-    int currentXp = prefs.getInt('user_xp') ?? 0;
-    await prefs.setInt('user_xp', currentXp + 20);
+    await ProfileService.setBool(key, true);
+    int currentXp = ProfileService.getInt('user_xp') ?? 0;
+    await ProfileService.setInt('user_xp', currentXp + 20);
 
-    // 🔥 UPDATED: Only increment streak if BOTH missions are done
-    bool m = prefs.getBool('morning_brush') ?? false;
-    bool n = prefs.getBool('night_brush') ?? false;
+    // Only increment streak if BOTH missions are done
+    bool m = ProfileService.getBool('morning_brush') ?? false;
+    bool n = ProfileService.getBool('night_brush') ?? false;
 
     if (m && n) {
       String today = DateTime.now().toIso8601String().split('T')[0];
-      String? lastDate = prefs.getString('last_brush_date');
+      String? lastDate = ProfileService.getString('last_brush_date');
       if (lastDate != today) {
-        int streak = prefs.getInt('streak_count') ?? 0;
-        await prefs.setInt('streak_count', streak + 1);
-        await prefs.setString('last_brush_date', today);
+        int streak = ProfileService.getInt('streak_count') ?? 0;
+        await ProfileService.setInt('streak_count', streak + 1);
+        await ProfileService.setString('last_brush_date', today);
       }
     }
 
     await _loadData();
 
-    // 🔥 Sync to Firebase
+    // Sync to Firebase
     _syncToFirebase();
 
-    if (!mounted) return; // 🛡️ Safety Check
+    if (!mounted) return;
     SoundManager.playPop();
 
     if (_morningBrush && _nightBrush) {
        _confettiController.play();
        await Future.delayed(const Duration(milliseconds: 500));
-       if (!mounted) return; // 🛡️ Safety Check
+       if (!mounted) return;
       _playSound('audio/yahoo.mp3');
     }
 
     if (_level > oldLevel) _showLevelUpDialog(_level);
   }
 
-  // 🔥 Firebase Sync Helper
+  // Firebase Sync Helper
   Future<void> _syncToFirebase() async {
-    final prefs = await SharedPreferences.getInstance();
     await FirebaseService().saveUserData(
-      userName: prefs.getString('user_name') ?? 'Hero',
-      xp: prefs.getInt('user_xp') ?? 0,
-      streak: prefs.getInt('streak_count') ?? 0,
-      morningBrush: prefs.getBool('morning_brush') ?? false,
-      nightBrush: prefs.getBool('night_brush') ?? false,
-      lastBrushDate: prefs.getString('last_brush_date') ?? '',
-      completedLessons: prefs.getStringList('completed_lessons') ?? [],
+      userName: ProfileService.getString('user_name') ?? 'Hero',
+      xp: ProfileService.getInt('user_xp') ?? 0,
+      streak: ProfileService.getInt('streak_count') ?? 0,
+      morningBrush: ProfileService.getBool('morning_brush') ?? false,
+      nightBrush: ProfileService.getBool('night_brush') ?? false,
+      lastBrushDate: ProfileService.getString('last_brush_date') ?? '',
+      completedLessons: ProfileService.getStringList('completed_lessons') ?? [],
     );
   }
 
@@ -499,11 +494,10 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
         actions: [
           TextButton(
             onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setString('user_name', nameController.text.trim().isEmpty ? "Hero" : nameController.text.trim());
+              await ProfileService.setString('user_name', nameController.text.trim().isEmpty ? "Hero" : nameController.text.trim());
               if (mounted) Navigator.pop(context);
               _loadData();
-              _syncToFirebase(); // 🔥 Sync name change to Firebase
+              _syncToFirebase();
             },
             child: Text('save'.tr()),
           )
@@ -581,7 +575,30 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                           // RIGHT SIDE: Compact Actions (Horizontal)
                           Row(
                             children: [
-                              // 🔥 THE CHAT BUTTON
+                              // PROFILE SWITCHER AVATAR
+                              GestureDetector(
+                                onTap: () {
+                                  SoundManager.playPop();
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ProfileSelectionScreen()));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 2),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: ProfileService.getActiveProfile()?.avatarColor ?? Colors.blue,
+                                    child: Text(
+                                      ProfileService.getActiveProfile()?.initials ?? '?',
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              // THE CHAT BUTTON
                               GestureDetector(
                                 onTap: () {
                                   SoundManager.playPop();
@@ -604,8 +621,6 @@ class _HomeContentState extends State<HomeContent> with SingleTickerProviderStat
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Image.asset('assets/tooth_logo.png', height: 50), // Logo
                             ],
                           ),
                         ],

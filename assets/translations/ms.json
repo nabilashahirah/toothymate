@@ -321,5 +321,19 @@
   "trophyTutorialDesc": "Kumpul lencana dengan memberus awal dan belajar!",
   "welcomeSubtitle": "Teman pergigian mesra anda!",
   "aiDentalBuddy": "Teman Gigi AI",
-  "whatYouCanDo": "Apa Yang Boleh Anda Lakukan"
+  "whatYouCanDo": "Apa Yang Boleh Anda Lakukan",
+  "whoIsPlaying": "Siapa Yang Bermain?",
+  "selectYourProfile": "Pilih profil anda untuk teruskan",
+  "addChild": "Wira Baru",
+  "addNewChild": "Cipta Wira Baru",
+  "childName": "Nama Wira",
+  "enterChildName": "Masukkan nama wira",
+  "chooseColor": "Pilih Warna",
+  "createProfile": "Cipta Profil",
+  "deleteProfile": "Padam Profil",
+  "deleteProfileConfirm": "Adakah anda pasti mahu memadam profil {}? Semua kemajuan akan hilang.",
+  "delete": "Padam",
+  "longPressToDelete": "Tekan lama pada profil untuk padam",
+  "pleaseEnterName": "Sila masukkan nama",
+  "switchProfile": "Tukar Profil"
 }

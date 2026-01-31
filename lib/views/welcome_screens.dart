@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../services/sound_manager.dart'; // Ensure this path matches your folder structure
-import 'home_screen.dart'; 
+import '../services/sound_manager.dart';
+import '../services/profile_service.dart';
+import 'home_screen.dart';
+import 'profile_selection_screen.dart'; 
 
 // ==========================================
 // 🎨 ANIMATION HELPERS (The "Juice")
@@ -152,7 +153,12 @@ class OnboardingScreen extends StatelessWidget {
 
   void _finishOnboarding(BuildContext context) {
     SoundManager.playPop();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const NameInputScreen()));
+
+    // Go to Profile Selection to create/select a profile
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
+    );
   }
 
   @override
@@ -410,24 +416,28 @@ class _NameInputScreenState extends State<NameInputScreen> with SingleTickerProv
 
   Future<void> _handleContinue() async {
     if (_nameController.text.trim().isNotEmpty) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_name', _nameController.text.trim());
-      
-      // Init Stats
-      if (prefs.getInt('user_xp') == null) await prefs.setInt('user_xp', 0);
-      if (prefs.getInt('streak_count') == null) await prefs.setInt('streak_count', 0);
-      
+      // Save user name with profile prefix
+      await ProfileService.setString('user_name', _nameController.text.trim());
+
+      // Init Stats if not exist
+      if (ProfileService.getInt('user_xp') == null) {
+        await ProfileService.setInt('user_xp', 0);
+      }
+      if (ProfileService.getInt('streak_count') == null) {
+        await ProfileService.setInt('streak_count', 0);
+      }
+
       if (!mounted) return;
 
-      // Mark onboarding as complete
-      await prefs.setBool('onboarding_complete', true);
+      // Mark onboarding as complete for this profile
+      await ProfileService.setBool('onboarding_complete', true);
 
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
     } else {
-      // ❌ JUICE: Shake & Error Sound
-      SoundManager.playPop(); 
-      _shakeController.forward(from: 0); // Trigger Shake
+      // Shake & Error Sound
+      SoundManager.playPop();
+      _shakeController.forward(from: 0);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('oopsForgotName'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),

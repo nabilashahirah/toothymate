@@ -322,5 +322,19 @@
   "aiChatDisclaimer": "I am a dental buddy, not a doctor! Always ask Dr. Karthi for medical help.",
   "welcomeSubtitle": "Your friendly dental companion!",
   "aiDentalBuddy": "AI Dental Buddy",
-  "whatYouCanDo": "What You Can Do"
+  "whatYouCanDo": "What You Can Do",
+  "whoIsPlaying": "Who's Playing?",
+  "selectYourProfile": "Select your profile to continue",
+  "addChild": "New Hero",
+  "addNewChild": "Create New Hero",
+  "childName": "Hero Name",
+  "enterChildName": "Enter hero's name",
+  "chooseColor": "Choose a Color",
+  "createProfile": "Create Profile",
+  "deleteProfile": "Delete Profile",
+  "deleteProfileConfirm": "Are you sure you want to delete {}'s profile? All progress will be lost.",
+  "delete": "Delete",
+  "longPressToDelete": "Long press on a profile to delete",
+  "pleaseEnterName": "Please enter a name",
+  "switchProfile": "Switch Profile"
 }

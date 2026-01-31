@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:lottie/lottie.dart';
 import 'package:toothymate_app_4/views/language_selection_screen.dart';
-import 'package:toothymate_app_4/views/home_screen.dart';
+import 'package:toothymate_app_4/views/profile_selection_screen.dart';
+import 'package:toothymate_app_4/services/profile_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -47,12 +48,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Wait for 3 seconds then check if onboarding is complete
+    // Wait for 3 seconds then check navigation flow
     Timer(const Duration(seconds: 3), () async {
       if (!mounted) return;
 
       final prefs = await SharedPreferences.getInstance();
-      final bool onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
       final String? savedLocale = prefs.getString('app_locale');
 
       // Restore saved language if exists
@@ -62,26 +62,34 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
       if (!mounted) return;
 
-      if (onboardingComplete) {
-        // User has completed onboarding, go directly to home
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const HomeScreen(),
-            transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      } else {
+      // Initialize profile service
+      await ProfileService.init();
+
+      // Check if language has been selected before
+      final bool languageSelected = savedLocale != null;
+
+      if (!mounted) return;
+
+      if (!languageSelected) {
         // First time user, show language selection
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             pageBuilder: (_, __, ___) => LanguageSelectionScreen(
               onLanguageSelected: () {
-                debugPrint("Language Selected! Navigate to Onboarding.");
+                debugPrint("Language Selected! Navigate to Profile Selection.");
               },
             ),
+            transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      } else {
+        // Language selected, go to profile selection
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const ProfileSelectionScreen(),
             transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
             transitionDuration: const Duration(milliseconds: 800),
           ),

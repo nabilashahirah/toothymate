@@ -4,26 +4,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'providers/chat_provider.dart';
 import 'services/firebase_service.dart';
-import 'views/splash_screen.dart'; // Import your new splash screen
+import 'services/profile_service.dart';
+import 'views/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  print('🚀 APP: Starting Firebase initialization...');
+  // Initialize Profile Service
+  await ProfileService.init();
 
   // Initialize Firebase
   try {
     await Firebase.initializeApp();
-    print('🚀 APP: Firebase.initializeApp() SUCCESS');
   } catch (e) {
-    print('🚀 APP: Firebase.initializeApp() ERROR: $e');
+    debugPrint('Firebase init error: $e');
   }
 
   // Initialize Firebase Service (Anonymous Auth)
   await FirebaseService().init();
-
-  print('🚀 APP: Firebase setup complete, starting app...');
 
   runApp(
     EasyLocalization(
