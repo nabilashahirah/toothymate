@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toothymate_app_4/views/welcome_screens.dart';
 import '../services/sound_manager.dart';
+import '../services/profile_service.dart';
 
 class LanguageSelectionScreen extends StatelessWidget {
   final VoidCallback onLanguageSelected;
@@ -116,10 +117,13 @@ class LanguageSelectionScreen extends StatelessWidget {
           // Set locale
           await context.setLocale(locale);
 
+          // Initialize profile service
+          await ProfileService.init();
+
           // Call the callback to notify parent
           onLanguageSelected();
 
-          // Navigate to Onboarding Screen
+          // Navigate to Onboarding Screen (first time user)
           if (context.mounted) {
              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const OnboardingScreen()));
           }
