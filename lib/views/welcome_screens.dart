@@ -151,14 +151,28 @@ class _AnimateInState extends State<AnimateIn> with SingleTickerProviderStateMix
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
-  void _finishOnboarding(BuildContext context) {
+  void _finishOnboarding(BuildContext context) async {
     SoundManager.playPop();
 
-    // Go to Profile Selection to create/select a profile
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
-    );
+    // Check if there's already an active profile (new profile flow)
+    final activeProfile = ProfileService.getActiveProfile();
+
+    if (activeProfile != null) {
+      // New profile created - mark onboarding complete and go to Home
+      await ProfileService.setBool('onboarding_complete', true);
+
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      // First-time user - go to Profile Selection to create a profile
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileSelectionScreen()),
+      );
+    }
   }
 
   @override

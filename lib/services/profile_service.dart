@@ -212,4 +212,19 @@ class ProfileService {
   static Future<bool> remove(String key) async {
     return await _prefs?.remove(getKey(key)) ?? false;
   }
+
+  // Reset current profile's data (keeps the profile but clears all progress)
+  static Future<void> resetCurrentProfile() async {
+    final profile = getActiveProfile();
+    if (profile == null) return;
+
+    // Clear all data with this profile's prefix
+    await _clearProfileData(profile.id);
+
+    // Re-initialize basic stats for this profile
+    await setString('user_name', profile.name);
+    await setInt('user_xp', 0);
+    await setInt('streak_count', 0);
+    await setBool('onboarding_complete', false);
+  }
 }

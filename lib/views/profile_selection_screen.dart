@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../services/profile_service.dart';
 import '../services/sound_manager.dart';
 import 'home_screen.dart';
+import 'welcome_screens.dart';
 
 class ProfileSelectionScreen extends StatefulWidget {
   const ProfileSelectionScreen({super.key});
@@ -54,16 +55,50 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
   }
 
   void _showAddProfileDialog() {
+    // Check if this is the first profile (user just came from onboarding)
+    // or additional profile (user came from home screen)
+    final isFirstProfile = _profiles.isEmpty;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _AddProfileSheet(
-        onProfileCreated: (profile) {
+        onProfileCreated: (profile) async {
           _loadProfiles();
-          _selectProfile(profile);
+          if (isFirstProfile) {
+            // First profile - they just saw onboarding, go directly to home
+            _selectProfile(profile);
+          } else {
+            // Additional profile from home - show onboarding first
+            await _selectNewProfile(profile);
+          }
         },
       ),
+    );
+  }
+
+  // For NEW profiles (created from home screen) - show onboarding first
+  Future<void> _selectNewProfile(ChildProfile profile) async {
+    SoundManager.playPop();
+    await ProfileService.setActiveProfile(profile);
+
+    // Set the user_name from the profile name
+    await ProfileService.setString('user_name', profile.name);
+
+    // Init stats for new profile
+    await ProfileService.setInt('user_xp', 0);
+    await ProfileService.setInt('streak_count', 0);
+
+    // Don't mark onboarding complete - they need to see it
+    await ProfileService.setBool('onboarding_complete', false);
+
+    if (!mounted) return;
+
+    // Go to Onboarding for new profiles
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
     );
   }
 
