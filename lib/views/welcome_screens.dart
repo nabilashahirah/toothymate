@@ -145,277 +145,224 @@ class _AnimateInState extends State<AnimateIn> with SingleTickerProviderStateMix
 }
 
 // ==========================================
-// 🚀 SCREEN 1: ONBOARDING (Story & Info)
+// 🚀 SCREEN 1: ONBOARDING (Single Screen)
 // ==========================================
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
-  @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
-}
-
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _controller = PageController();
-  int _currentPage = 0;
-
-  // 📝 CONTENT DATA
-  final List<Map<String, dynamic>> _pages = [
-    {
-      // Screen 1: Core Problem
-      "title": "onboardingTitle1",
-      "body": "onboardingBody1",
-      "image": "assets/images/kidbrush.png",
-      "deco": "assets/images/question.png",
-      "isFeatures": false,
-    },
-    {
-      // Screen 2: How ToothyMate Helps
-      "title": "onboardingTitle2",
-      "body": "onboardingBody2",
-      "image": "",
-      "deco": null,
-      "isFeatures": true,
-    },
-    {
-      // Screen 3: Benefits
-      "title": "onboardingTitle3",
-      "body": "onboardingBody3",
-      "image": "assets/images/happykids.png",
-      "deco": null,
-      "isFeatures": false,
-    },
-  ];
-
-  void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
-      _controller.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-    } else {
-      _finishOnboarding();
-    }
-  }
-
-  void _finishOnboarding() {
+  void _finishOnboarding(BuildContext context) {
     SoundManager.playPop();
     Navigator.push(context, MaterialPageRoute(builder: (context) => const NameInputScreen()));
   }
 
-  Widget _buildGradientCard({
-    required String imagePath, 
-    required String title, 
-    required String subtitle, 
-    required Gradient gradient
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        gradient: gradient, 
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 8, offset: const Offset(0, 4))
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF4FC3F7), Color(0xFF0288D1)],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+
+                // LOGO WITH GLOW EFFECT
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.4),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/tooth_logo.png',
+                    height: 100,
+                    width: 100,
+                    errorBuilder: (c, e, s) => const Icon(
+                      Icons.mood,
+                      size: 80,
+                      color: Color(0xFF0288D1),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // APP NAME & TAGLINE
+                const Text(
+                  'ToothyMate',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'welcomeSubtitle'.tr(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // FEATURES SECTION
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'whatYouCanDo'.tr(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _FeatureRow(
+                        icon: Icons.camera_alt_rounded,
+                        color: const Color(0xFFE91E63),
+                        text: 'aiToothScanner'.tr(),
+                      ),
+                      _FeatureRow(
+                        icon: Icons.view_in_ar_rounded,
+                        color: const Color(0xFF2196F3),
+                        text: 'threeDMagicModels'.tr(),
+                      ),
+                      _FeatureRow(
+                        icon: Icons.school_rounded,
+                        color: const Color(0xFFFF9800),
+                        text: 'smartELearning'.tr(),
+                      ),
+                      _FeatureRow(
+                        icon: Icons.chat_bubble_rounded,
+                        color: const Color(0xFF4CAF50),
+                        text: 'aiDentalBuddy'.tr(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Spacer(),
+
+                // CTA BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => _finishOnboarding(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF9800),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'getStarted'.tr(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward_rounded, size: 22),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
       ),
+    );
+  }
+}
+
+// Feature Row Widget
+class _FeatureRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _FeatureRow({
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.25), shape: BoxShape.circle),
-            child: Image.asset(
-              imagePath, 
-              height: 40,
-              width: 40,
-              fit: BoxFit.contain,
-              errorBuilder: (c, e, s) => const Icon(Icons.image_not_supported, color: Colors.white, size: 30),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.2, fontWeight: FontWeight.w500)),
-              ],
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF444444),
+              ),
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      body: AnimatedBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              // SKIP BUTTON
-              Align(
-                alignment: Alignment.topRight,
-                child: TextButton(
-                  onPressed: _finishOnboarding,
-                  child: Text("skip".tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
-                ),
-              ),
-
-              // PAGE CONTENT
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  onPageChanged: (index) => setState(() => _currentPage = index),
-                  itemCount: _pages.length,
-                  itemBuilder: (context, index) {
-                    final page = _pages[index];
-                    final bool isFeatures = page['isFeatures'] == true;
-                    final bool isActive = _currentPage == index;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // --- IMAGE AREA ---
-                              if (isFeatures)
-                                Column(
-                                  children: [
-                                    AnimateIn(
-                                      isVisible: isActive,
-                                      delay: 100,
-                                      child: _buildGradientCard(
-                                        imagePath: 'assets/tooth_scan.png',
-                                        title: 'aiToothScanner'.tr(), 
-                                        subtitle: 'findsCavities'.tr(), 
-                                        gradient: const LinearGradient(colors: [Color(0xFFBA68C8), Color(0xFFE91E63)]), 
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    AnimateIn(
-                                      isVisible: isActive,
-                                      delay: 300,
-                                      child: _buildGradientCard(
-                                        imagePath: 'assets/tooth_AR.png',
-                                        title: 'threeDMagicModels'.tr(), 
-                                        subtitle: 'seeInsideTooth'.tr(), 
-                                        gradient: const LinearGradient(colors: [Color(0xFF4FC3F7), Color(0xFF009688)]), 
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    AnimateIn(
-                                      isVisible: isActive,
-                                      delay: 500,
-                                      child: _buildGradientCard(
-                                        imagePath: 'assets/tooth_edu.png',
-                                        title: 'smartELearning'.tr(),  
-                                        subtitle: 'includesGames'.tr(), 
-                                        gradient: const LinearGradient(colors: [Color(0xFFFFB74D), Color(0xFFFF9800)]), 
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              else
-                                AnimateIn(
-                                  isVisible: isActive,
-                                  delay: 0,
-                                  child: SizedBox(
-                                    height: screenSize.height * 0.35, // Responsive Height
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        // Main Asset
-                                        Image.asset(page['image'], height: screenSize.height * 0.28, errorBuilder: (c,e,s) => const Icon(Icons.image, size: 100, color: Colors.white54)),
-                                        
-                                        // Deco Asset (if any)
-                                        if (page['deco'] != null)
-                                          Positioned(
-                                            right: 0, top: 0,
-                                            child: Image.asset(page['deco'], height: screenSize.height * 0.1, errorBuilder: (c,e,s) => const SizedBox()),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              const SizedBox(height: 30),
-                              
-                              // --- TEXT ---
-                              AnimateIn(
-                                isVisible: isActive,
-                                delay: 200,
-                                child: Text(
-                                  page['title'].toString().tr(),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))]),
-                                ),
-                              ),
-                              const SizedBox(height: 15),
-                              AnimateIn(
-                                isVisible: isActive,
-                                delay: 400,
-                                child: Text(
-                                  page['body'].toString().tr(),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 16, color: Colors.white, height: 1.5, fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              // BOTTOM CONTROLS
-              Padding(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  children: [
-                    // Dots Indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(_pages.length, (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        height: 10,
-                        width: _currentPage == index ? 30 : 10,
-                        decoration: BoxDecoration(
-                          color: _currentPage == index ? Colors.orange : Colors.white54,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      )),
-                    ),
-                    const SizedBox(height: 20),
-                    
-                    // Action Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 60,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          SoundManager.playPop();
-                          _nextPage();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF9800),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          elevation: 8,
-                        ),
-                        child: Text(
-                          _currentPage == _pages.length - 1 ? "getStarted".tr() + " 🚀" : "next".tr() + " ➡️",
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
-        ),
+          Icon(
+            Icons.check_circle,
+            color: color,
+            size: 20,
+          ),
+        ],
       ),
     );
   }

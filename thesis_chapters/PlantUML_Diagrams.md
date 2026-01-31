@@ -36,7 +36,7 @@ if (Mission Available?) then (yes)
   endif
 
   :Check Badge Unlocks;
-  :Save Progress;
+  :Save to Local + Firebase;
 else (no)
 endif
 
@@ -262,22 +262,29 @@ package "Service Layer" #FFF3E0 {
   [Gemini Service]
   [TTS Service]
   [Feedback Service]
+  [Firebase Service]
 }
 
 package "Data Layer" #F3E5F5 {
-  database "SharedPreferences" as SP
+  database "SharedPreferences\n(Local Cache)" as SP
   database "JSON Assets" as JSON
 }
 
 package "External Services" #FFEBEE {
   [TensorFlow Lite]
   [Google Gemini API]
+  cloud "Firebase" {
+    [Firestore]
+    [Anonymous Auth]
+  }
 }
 
 [Presentation Layer] --> [State Management]
 [State Management] --> [Service Layer]
 [Service Layer] --> [Data Layer]
 [Service Layer] --> [External Services]
+[Firebase Service] --> [Firestore]
+[Firebase Service] --> [Anonymous Auth]
 
 @enduml
 ```
@@ -358,7 +365,7 @@ repeat
 
   :Display Response;
   :Text-to-Speech;
-  :Save to History;
+  :Save to Local + Firebase;
 
 repeat while (Continue Chat?) is (yes)
 
@@ -392,6 +399,71 @@ else (no)
   stop
 endif
 
+@enduml
+```
+
+---
+
+## 10. Project Phases Timeline (Matching Gantt Chart)
+
+```plantuml
+@startuml Project Phases
+skinparam backgroundColor #FEFEFE
+skinparam packageStyle rectangle
+
+package "SEMESTER A (SKM4950A)" #FAFAFA {
+  rectangle "Phase 1\nPlanning\nWeek 1-4" as P1 #FFCDD2
+  rectangle "Phase 2\nRequirement\n& Design\nWeek 3-6" as P2 #C8E6C9
+  rectangle "Phase 3\nProposal &\nPresentation\nWeek 6-10" as P3 #BBDEFB
+  rectangle "Phase 4\nSubmission\nWeek 9-11" as P4 #D1C4E9
+}
+
+package "SEMESTER B (SKM4950B)" #FAFAFA {
+  rectangle "Phase 5\nSkill &\nPrototype Prep\nWeek 1-4" as P5 #B3E5FC
+  rectangle "Phase 6\nAgile\nDevelopment\nWeek 3-9" as P6 #FFE0B2
+  rectangle "Phase 7\nTesting &\nFinalization\nWeek 7-11" as P7 #C5CAE9
+  rectangle "Phase 8\nFinal Report\n& Presentation\nWeek 10-14" as P8 #DCEDC8
+}
+
+P1 -right-> P2
+P2 -right-> P3
+P3 -right-> P4
+P4 -down-> P5
+P5 -right-> P6
+P6 -right-> P7
+P7 -right-> P8
+
+@enduml
+```
+
+---
+
+## 11. Agile Development Iterations (Phase 6)
+
+```plantuml
+@startuml Agile Iterations
+skinparam backgroundColor #FEFEFE
+
+|Phase 6: Agile Development (Week 3-9)|
+start
+:Iteration 1: Gamification;
+note right: XP system, streaks, badges,\nhero ranks, daily missions
+:Iteration 2: E-Learning;
+note right: 13 lessons, flip cards, quizzes,\nYouTube videos, bilingual JSON
+:Iteration 3: AR Module;
+note right: 3D tooth model, gesture controls,\n5 discoverable cases, confetti
+:Iteration 4: AI Scan;
+note right: TensorFlow Lite, camera,\nimage preprocessing, 5-class model
+:Iteration 5: AI Chatbot;
+note right: Google Gemini API, safety filters,\nemotion detection, TTS
+:Iteration 6: Firebase;
+note right: Anonymous Auth, Firestore,\nhybrid storage, cloud sync
+:Iteration 7: Integration & i18n;
+note right: Localization (EN/MS), sounds,\nLottie animations, bug fixes
+
+:User Feedback & Refinement;
+
+stop
 @enduml
 ```
 

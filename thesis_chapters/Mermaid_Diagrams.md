@@ -31,6 +31,101 @@ flowchart LR
 
 ---
 
+## 1b. Project Phases Timeline (Matching Gantt Chart)
+
+```mermaid
+flowchart TB
+    subgraph SemA["SEMESTER A (SKM4950A)"]
+        P1[Phase 1<br/>Planning<br/>Week 1-4]
+        P2[Phase 2<br/>Requirement<br/>& Design<br/>Week 3-6]
+        P3[Phase 3<br/>Proposal &<br/>Presentation<br/>Week 6-10]
+        P4[Phase 4<br/>Submission<br/>Week 9-11]
+
+        P1 --> P2 --> P3 --> P4
+    end
+
+    subgraph SemB["SEMESTER B (SKM4950B)"]
+        P5[Phase 5<br/>Skill &<br/>Prototype Prep<br/>Week 1-4]
+        P6[Phase 6<br/>Agile<br/>Development<br/>Week 3-9]
+        P7[Phase 7<br/>Testing &<br/>Finalization<br/>Week 7-11]
+        P8[Phase 8<br/>Final Report<br/>& Presentation<br/>Week 10-14]
+
+        P5 --> P6 --> P7 --> P8
+    end
+
+    P4 --> P5
+
+    style P1 fill:#FFCDD2,stroke:#D32F2F
+    style P2 fill:#C8E6C9,stroke:#388E3C
+    style P3 fill:#BBDEFB,stroke:#1976D2
+    style P4 fill:#D1C4E9,stroke:#7B1FA2
+    style P5 fill:#B3E5FC,stroke:#0288D1
+    style P6 fill:#FFE0B2,stroke:#F57C00
+    style P7 fill:#C5CAE9,stroke:#3F51B5
+    style P8 fill:#DCEDC8,stroke:#689F38
+
+    style SemA fill:#FAFAFA,stroke:#9E9E9E
+    style SemB fill:#FAFAFA,stroke:#9E9E9E
+```
+
+---
+
+## 1c. Agile Development Iterations (Phase 6)
+
+```mermaid
+flowchart TB
+    subgraph Phase6["PHASE 6: AGILE DEVELOPMENT (Semester B, Week 3-9)"]
+        I1[Iteration 1<br/>Gamification<br/>System]
+        I2[Iteration 2<br/>E-Learning<br/>Module]
+        I3[Iteration 3<br/>AR Tooth<br/>Module]
+        I4[Iteration 4<br/>AI Scan<br/>Module]
+        I5[Iteration 5<br/>AI Chatbot<br/>Module]
+        I6[Iteration 6<br/>Firebase<br/>Cloud DB]
+        I7[Iteration 7<br/>Integration<br/>& i18n]
+
+        I1 --> I2 --> I3 --> I4 --> I5 --> I6 --> I7
+    end
+
+    FB[User Feedback<br/>& Refinement]
+    I7 --> FB
+    FB -.-> I1
+
+    style I1 fill:#FF9800,stroke:#F57C00,color:#fff
+    style I2 fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    style I3 fill:#8BC34A,stroke:#558B2F,color:#fff
+    style I4 fill:#00BCD4,stroke:#00838F,color:#fff
+    style I5 fill:#E91E63,stroke:#AD1457,color:#fff
+    style I6 fill:#FFCA28,stroke:#FF8F00,color:#000
+    style I7 fill:#607D8B,stroke:#455A64,color:#fff
+    style FB fill:#4CAF50,stroke:#2E7D32,color:#fff
+
+    style Phase6 fill:#FFF3E0,stroke:#F57C00
+```
+
+---
+
+## 1d. Project Gantt Chart (Matching Your Timeline)
+
+```mermaid
+gantt
+    title ToothyMate FYP Project Timeline
+    dateFormat  YYYY-MM-DD
+
+    section Semester A (SKM4950A)
+    Phase 1 - Planning                      :p1, 2024-09-01, 28d
+    Phase 2 - Requirement & Design          :p2, 2024-09-15, 28d
+    Phase 3 - Proposal & Presentation       :p3, 2024-10-06, 35d
+    Phase 4 - Submission                    :p4, 2024-10-27, 21d
+
+    section Semester B (SKM4950B)
+    Phase 5 - Skill & Prototype Prep        :p5, 2025-01-13, 28d
+    Phase 6 - Agile Development             :p6, 2025-01-27, 49d
+    Phase 7 - Testing & Finalization        :p7, 2025-02-24, 35d
+    Phase 8 - Final Report & Presentation   :p8, 2025-03-17, 35d
+```
+
+---
+
 ## 2. System Architecture Diagram
 
 ```mermaid
@@ -57,18 +152,20 @@ flowchart TB
         GemSvc[Gemini Service]
         TTSSvc[TTS Service]
         ImgSvc[Image Service]
-        FBSvc[Feedback Service]
+        FeedSvc[Feedback Service]
         SndMgr[Sound Manager]
+        FBSvc[Firebase Service]
     end
 
     subgraph DL["Data Layer"]
-        SP[(SharedPreferences)]
+        SP[(SharedPreferences<br/>Local Cache)]
         JSON[(JSON Assets)]
     end
 
     subgraph ES["External Services"]
         TFL[TensorFlow Lite<br/>On-Device]
         GEM[Google Gemini<br/>API]
+        FB[Firebase<br/>Firestore + Auth]
     end
 
     PL --> SM
@@ -88,6 +185,7 @@ flowchart TB
 ## 3. Application Main Flowchart
 
 ```mermaid
+%%{init: {'themeVariables': { 'fontSize': '20px'}}}%%
 flowchart TD
     A([Start]) --> B[Launch ToothyMate App]
     B --> C[Display Splash Screen]
@@ -112,21 +210,25 @@ flowchart TD
 
     J --> J1[Browse Lessons]
     J1 --> J2[Complete Lesson/Quiz]
+    J2 --> J3[Listen to Lesson Audio]
 
     K --> K1[Camera/Gallery]
     K1 --> K2[Get AI Classification Result]
+    K2 --> K3[Hear Audio Feedback]
 
     L --> L1[Ask Question]
     L1 --> L2[Receive AI Response]
+    L2 --> L3[Listen to Response]
 
     M --> M1[Explore 3D Model]
     M1 --> M2[Discover Dental Cases]
+    M2 --> M3[Hear Case Info]
 
     I2 --> N{Return to Home?}
-    J2 --> N
-    K2 --> N
-    L2 --> N
-    M2 --> N
+    J3 --> N
+    K3 --> N
+    L3 --> N
+    M3 --> N
 
     N -->|Yes| G
     N -->|No| O[Continue in Feature]
@@ -147,11 +249,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph User
+    subgraph UserSide ["Primary Actor"]
         U((Child User))
     end
 
-    subgraph ToothyMate["ToothyMate System"]
+    subgraph ToothyMate["ToothyMate System Boundary"]
         subgraph UC1["Complete Daily Missions"]
             DM[Complete Daily Missions]
             DM1[Earn XP]
@@ -188,6 +290,12 @@ flowchart LR
         end
     end
 
+    subgraph ExternalSide ["Secondary Actors (System Output)"]
+        FB[Firebase Cloud]
+        GEM[Gemini AI API]
+        TTS[Text-to-Speech / Speaker]
+    end
+
     U --> DM
     U --> EL
     U --> AI
@@ -197,25 +305,38 @@ flowchart LR
     DM -.->|include| DM1
     DM -.->|include| DM2
     DM -.->|include| DM3
+    DM2 -.->|cloud sync| FB
+    DM3 -.->|cloud sync| FB
 
     EL -.->|include| EL1
     EL -.->|include| EL2
     EL -.->|include| EL3
+    EL2 -.->|cloud sync| FB
+    EL3 -.->|audio| TTS
 
     AI -.->|include| AI1
     AI -.->|include| AI2
     AI -.->|include| AI3
+    AI3 -.->|audio| TTS
 
     AR -.->|include| AR1
     AR -.->|include| AR2
     AR -.->|include| AR3
+    AR2 -.->|audio| TTS
 
     CH -.->|include| CH1
     CH -.->|include| CH2
     CH -.->|include| CH3
+    CH1 -.->|send| GEM
+    CH2 -.->|cloud log| FB
+    CH3 -.->|audio| TTS
 
-    style U fill:#FFD54F,stroke:#FF8F00
+    style U fill:#FFD54F,stroke:#FF8F00,color:#000
     style ToothyMate fill:#E3F2FD,stroke:#1976D2
+    style ExternalSide fill:#FFEBEE,stroke:#D32F2F,color:#000
+    style FB fill:#FFCA28,stroke:#FF8F00,color:#000
+    style GEM fill:#4285F4,stroke:#1A73E8,color:#fff
+    style TTS fill:#9E9E9E,stroke:#616161,color:#fff
 ```
 
 ---
@@ -340,7 +461,7 @@ flowchart TD
 
     S --> T{New Badge Earned?}
     T -->|Yes| U[Show Badge Animation]
-    T -->|No| V[Save Progress]
+    T -->|No| V[Save to Local + Firebase]
 
     U --> V
     V --> C
@@ -445,7 +566,7 @@ flowchart TD
     P --> Q
 
     Q --> R[Text-to-Speech]
-    R --> S[Save to Chat History]
+    R --> S[Save to Local + Firebase]
 
     S --> T{Continue Chat?}
 
@@ -471,6 +592,7 @@ flowchart TB
         CAM[Device Camera]
         GAL[Device Gallery]
         SPK[Device Speaker/TTS]
+        FB[Firebase Cloud]
     end
 
     subgraph ToothyMate["ToothyMate Application"]
@@ -487,10 +609,11 @@ flowchart TB
             GS[Gemini<br/>Service]
         end
 
-        subgraph Storage["Local Storage"]
-            SP[(SharedPreferences)]
+        subgraph Storage["Data Storage"]
+            SP[(SharedPreferences<br/>Local Cache)]
             JS[(JSON Lessons)]
             AS[(Asset Files)]
+            FBS[Firebase Service]
         end
     end
 
@@ -516,6 +639,9 @@ flowchart TB
     GS --> GEM
 
     GM --> SP
+    GM --> FBS
+    FBS --> FB
+    CB --> FBS
     EL --> JS
     AR --> AS
 
@@ -527,6 +653,99 @@ flowchart TB
     style Users fill:#E8F5E9,stroke:#388E3C
     style CH fill:#FFD54F,stroke:#FF8F00
     style PA fill:#A5D6A7,stroke:#388E3C
+    style FB fill:#FFCA28,stroke:#FF8F00
+```
+
+---
+
+---
+
+## 11. Firebase Firestore Data Structure
+
+```mermaid
+flowchart TB
+    subgraph Firestore["Firebase Firestore Database"]
+        subgraph Users["users Collection"]
+            UID["/{anonymousUserId}"]
+
+            subgraph UserDoc["User Document Fields"]
+                UN[userName: String]
+                XP[xp: Number]
+                ST[streak: Number]
+                MB[morningBrush: Boolean]
+                NB[nightBrush: Boolean]
+                LBD[lastBrushDate: String]
+                CL[completedLessons: Array]
+                LU[lastUpdated: Timestamp]
+            end
+
+            subgraph ChatSub["chatHistory Subcollection"]
+                MSG["/{messageId}"]
+                subgraph MsgFields["Message Fields"]
+                    SND[sender: String]
+                    TXT[text: String]
+                    TS[timestamp: Timestamp]
+                end
+            end
+        end
+    end
+
+    UID --> UserDoc
+    UID --> ChatSub
+    MSG --> MsgFields
+
+    style Firestore fill:#FFECB3,stroke:#FF8F00
+    style Users fill:#E3F2FD,stroke:#1976D2
+    style UserDoc fill:#E8F5E9,stroke:#388E3C
+    style ChatSub fill:#F3E5F5,stroke:#7B1FA2
+```
+
+---
+
+## 12. Technology Stack Diagram
+
+```mermaid
+flowchart TB
+    subgraph TechStack["ToothyMate Technology Stack"]
+        direction TB
+        
+        subgraph FE["Frontend (Mobile App)"]
+            direction LR
+            FL[Flutter Framework]
+            DA[Dart Language]
+            PRO[Provider State Mgmt]
+        end
+
+        subgraph BE["Backend & Database"]
+            direction LR
+            FB[Firebase Cloud]
+            FS[Firestore Database]
+            SP[SharedPreferences (Local)]
+        end
+
+        subgraph AI["Artificial Intelligence"]
+            direction LR
+            GEM[Google Gemini API]
+            TFL[TensorFlow Lite]
+            TTS[Text-to-Speech]
+        end
+        
+        subgraph AR["Augmented Reality"]
+            direction LR
+            ARC[ARCore / ARKit]
+            GLB[3D GLB Models]
+        end
+    end
+
+    style FE fill:#E3F2FD,stroke:#1976D2
+    style BE fill:#FFF3E0,stroke:#F57C00
+    style AI fill:#E8F5E9,stroke:#388E3C
+    style AR fill:#F3E5F5,stroke:#7B1FA2
+    
+    style FL fill:#fff,stroke:#1976D2
+    style FB fill:#fff,stroke:#F57C00
+    style GEM fill:#fff,stroke:#388E3C
+    style ARC fill:#fff,stroke:#7B1FA2
 ```
 
 ---

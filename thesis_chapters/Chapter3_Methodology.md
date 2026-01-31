@@ -18,68 +18,100 @@ This project adopts the Agile methodology as its core development approach. Agil
 
 4. **Risk Management:** Early and continuous testing allows for identification and resolution of technical challenges before they become critical.
 
-### 3.2.1 Agile Development Process
+### 3.2.1 Project Phases Overview
 
-The development process consists of multiple sprints, each focusing on specific features or modules:
+The project follows a structured timeline across two semesters, with the Agile methodology applied during the development phase:
 
-**Sprint 1: Planning and Foundation**
-- Literature review and requirement analysis
-- Technology stack selection
-- Project architecture design
-- Basic Flutter application setup
+| Phase | Name | Semester | Weeks | Description |
+|-------|------|----------|-------|-------------|
+| 1 | Planning | A | 1-4 | Topic confirmation, problem statement, literature review, survey distribution |
+| 2 | Requirement & Design | A | 3-6 | Survey analysis, system scope, wireframes, UI design, app flow |
+| 3 | Proposal & Presentation | A | 6-10 | Draft proposal, slides preparation, proposal defense |
+| 4 | Submission | A | 9-11 | Submit proposal presentation and report |
+| 5 | Skill & Prototype Prep | B | 1-4 | Learn development tools, prototype basic UI, initial feedback |
+| 6 | **Agile Development** | B | 3-9 | Iterative module development with continuous feedback |
+| 7 | Testing & Finalization | B | 7-11 | User testing, bug fixes, refinements |
+| 8 | Final Report & Presentation | B | 10-14 | Thesis finalization, demo preparation, final submission |
 
-**Sprint 2: Core Gamification System**
-- Home screen development with user profile
-- XP and level progression system
-- Daily missions (morning/night brushing)
-- Streak tracking mechanism
-- Achievement badge system
+### 3.2.2 Agile Development Iterations (Phase 6)
 
-**Sprint 3: E-Learning Module**
-- Lesson data structure and JSON content
-- Lesson listing with categories and search
-- Lesson detail view with flip cards
-- Quiz integration
-- YouTube video player integration
-- Lesson completion tracking
+Within the **Agile Development phase**, the development follows iterative cycles. Each iteration focuses on specific modules, with continuous integration and feedback:
 
-**Sprint 4: AR Module**
-- 3D tooth model integration (GLB format)
-- AR scene setup with plane detection
-- Gesture controls (zoom, rotate)
-- Discoverable dental cases
-- Celebratory feedback (confetti, TTS)
+**Iteration 1: Core Gamification System**
+- Home screen UI development with gradient background and mascot character
+- User profile card with editable name and avatar
+- XP system implementation (20 XP per mission, 100 XP per level)
+- Hero rank progression (7 ranks from Tooth Rookie to Legendary Smile Guardian)
+- Daily missions with time-based visibility (morning 6AM-12PM, night 6PM-12AM)
+- Streak tracking with calendar-based logic
+- Achievement badge system (First Brush, Week Warrior, Tooth Genius, etc.)
+- SharedPreferences integration for local data persistence
 
-**Sprint 5: AI Classification Module**
-- TensorFlow Lite model integration
-- Camera service implementation
-- Image preprocessing pipeline
-- Classification result display
-- Feedback service with TTS
+**Iteration 2: E-Learning Module**
+- JSON-based lesson data structure with bilingual content (EN/MS)
+- 13 lessons covering: tooth anatomy, brushing techniques, flossing, cavities, gum disease, diet, dentist visits, braces, mouthguard, baby teeth, bad breath, tooth injuries, sealants
+- Lesson listing screen with category filtering and search functionality
+- Lesson detail view with interactive flip cards
+- Quiz component with multiple-choice questions and immediate feedback
+- YouTube video player integration using `youtube_player_flutter`
+- Lesson completion tracking with progress persistence
+- XP rewards for completing lessons
 
-**Sprint 6: AI Chatbot Module**
-- Google Gemini API integration
-- Chat interface development
-- Safety content filtering
-- Dynamic bot personality
-- Quick question buttons
-- Chat history persistence
+**Iteration 3: AR Module**
+- AR Flutter Plugin integration for augmented reality functionality
+- 3D tooth model loading (GLB format) with texture support
+- AR scene setup with horizontal plane detection
+- Gesture controls: pinch-to-zoom, drag-to-rotate
+- 5 discoverable dental cases on tooth model (cavity, plaque, healthy enamel, root, gum)
+- Confetti animation on case discovery
+- Text-to-speech feedback for discovered cases
+- AR session management and resource cleanup
 
-**Sprint 7: Integration and Polish**
-- Module integration
-- Localization (English/Malay)
-- UI/UX refinement
-- Sound effects and animations
-- Tutorial overlay
-- Bug fixes and optimization
+**Iteration 4: AI Classification Module**
+- TensorFlow Lite model integration (`tflite_flutter` package)
+- Custom trained model for 5-class classification
+- Camera service with live preview and capture functionality
+- Gallery image picker integration
+- Image preprocessing: resize to 224×224, normalize pixels, convert to Float32
+- Classification result display with confidence percentages
+- Mascot-based feedback icons (happy, concerned, neutral)
+- Text-to-speech for classification results
+- Educational disclaimers (non-diagnostic purpose)
 
-**Sprint 8: Testing and Evaluation**
-- Functional testing
-- User acceptance testing
-- Performance optimization
-- Documentation
+**Iteration 5: AI Chatbot Module**
+- Google Gemini API integration (`google_generative_ai` package)
+- Chat interface with message bubbles and typing indicators
+- System prompt engineering for child-friendly dental assistant persona
+- Safety content filtering (dental topics only, age-appropriate language)
+- Dynamic bot personality with emotion detection (happy, sad, neutral icons)
+- Quick question buttons for common dental queries
+- Chat history persistence with SharedPreferences
+- Text-to-speech for bot responses
+- Clear chat functionality
 
-### 3.2.2 Agile Methodology Diagram
+**Iteration 6: Cloud Database Integration**
+- Firebase project setup and configuration
+- Firebase Core initialization in `main.dart`
+- Firebase Anonymous Authentication (no login required)
+- Firestore database structure design (`users/{userId}/` collection)
+- `FirebaseService` singleton implementation
+- User data sync: XP, streak, missions, completed lessons
+- Chat history cloud backup (`chatHistory` subcollection)
+- Hybrid storage strategy (local cache + cloud backup)
+- Offline support with SharedPreferences fallback
+- Android Gradle configuration for Google Services
+
+**Iteration 7: Integration, Localization, and Polish**
+- Module integration and navigation flow
+- EasyLocalization setup for bilingual support (English/Malay)
+- Translation JSON files for all UI text
+- Sound effects integration (button clicks, achievements, celebrations)
+- Lottie animations for splash screen and loading states
+- Tutorial overlay for first-time users
+- UI/UX refinement based on testing feedback
+- Bug fixes and performance optimization
+
+### 3.2.3 Agile Methodology Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -100,15 +132,48 @@ The development process consists of multiple sprints, each focusing on specific 
 │                   │ FEEDBACK │                                   │
 │                   └──────────┘                                   │
 │                                                                  │
-│    Each Sprint: 2-3 weeks                                       │
-│    Total Sprints: 8                                              │
+│    Applied during Phase 6: Agile Development (Sem B, Week 3-9)  │
+│    Total Iterations: 7                                           │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+### 3.2.4 Development Iterations Timeline
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│            AGILE DEVELOPMENT ITERATIONS (Phase 6, Semester B)                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Week 3-4        Week 4-5        Week 5-6        Week 6-7                   │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐              │
+│  │Iteration │───>│Iteration │───>│Iteration │───>│Iteration │              │
+│  │    1     │    │    2     │    │    3     │    │    4     │              │
+│  │Gamifica- │    │E-Learning│    │    AR    │    │ AI Scan  │              │
+│  │  tion    │    │  Module  │    │  Module  │    │  Module  │              │
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘              │
+│       │                                               │                     │
+│       └─────────────── Feedback Loop ─────────────────┘                     │
+│                                                                              │
+│  Week 7-8        Week 8-9        Week 9                                     │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐                              │
+│  │Iteration │───>│Iteration │───>│Iteration │                              │
+│  │    5     │    │    6     │    │    7     │                              │
+│  │    AI    │    │ Firebase │    │ Integra- │                              │
+│  │ Chatbot  │    │  Cloud   │    │tion/i18n │                              │
+│  └──────────┘    └──────────┘    └──────────┘                              │
+│       │                               │                                     │
+│       └────── Continuous Feedback ────┘                                     │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 Throughout the Agile process, user stories are defined to reflect real-world needs. Examples include:
 - "As a child, I want to earn points for brushing my teeth so that I feel motivated to brush every day."
 - "As a child, I want to see a 3D tooth model so that I can understand what my teeth look like inside."
+- "As a child, I want to ask questions about teeth and get friendly answers so that I can learn more."
+- "As a child, I want to scan my teeth and see if they are healthy so that I can take better care of them."
 - "As a parent, I want my child to learn about dental health through fun lessons so that they develop good habits."
+- "As a user, I want my progress to be saved automatically so that I don't lose my achievements."
 
 Regular reviews and testing during each sprint allow for quick identification of issues, feature adjustments, and usability improvements.
 
@@ -274,7 +339,7 @@ ToothyMate follows a modular architecture based on the Model-View-Provider patte
 │  │                      DATA LAYER                          │    │
 │  │  ┌──────────────────┐  ┌──────────────────┐             │    │
 │  │  │ SharedPreferences │  │    JSON Assets   │             │    │
-│  │  │  (Local Storage)  │  │ (Lessons, i18n)  │             │    │
+│  │  │  (Local Cache)    │  │ (Lessons, i18n)  │             │    │
 │  │  └──────────────────┘  └──────────────────┘             │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                              │                                   │
@@ -285,6 +350,12 @@ ToothyMate follows a modular architecture based on the Model-View-Provider patte
 │  │  │  TensorFlow Lite │  │   Google Gemini  │             │    │
 │  │  │   (On-Device)    │  │      (API)       │             │    │
 │  │  └──────────────────┘  └──────────────────┘             │    │
+│  │  ┌──────────────────────────────────────────┐           │    │
+│  │  │        Firebase (Cloud Database)         │           │    │
+│  │  │  ┌─────────────┐  ┌─────────────────┐   │           │    │
+│  │  │  │  Firestore  │  │ Anonymous Auth  │   │           │    │
+│  │  │  └─────────────┘  └─────────────────┘   │           │    │
+│  │  └──────────────────────────────────────────┘           │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -542,7 +613,10 @@ Several tools, frameworks, and programming platforms were employed in the develo
 | **image** | Image processing and manipulation | ^4.3.0 |
 | **google_generative_ai** | Google Gemini API for chatbot | ^0.4.5 |
 | **ar_flutter_plugin** | Augmented Reality functionality | Any |
-| **shared_preferences** | Local data persistence | ^2.1.1 |
+| **shared_preferences** | Local data persistence (cache) | ^2.1.1 |
+| **firebase_core** | Firebase initialization | ^3.8.1 |
+| **cloud_firestore** | Cloud database for user data | ^5.6.0 |
+| **firebase_auth** | Anonymous authentication | ^5.3.4 |
 | **easy_localization** | Bilingual support (EN/MS) | ^3.0.7 |
 | **flutter_tts** | Text-to-speech functionality | ^4.2.2 |
 | **audioplayers** | Sound effects playback | Any |
@@ -561,7 +635,24 @@ Several tools, frameworks, and programming platforms were employed in the develo
 | **Processing** | On-device inference (no cloud required) |
 | **Google Gemini Flash** | Large language model for conversational AI chatbot |
 
-### 3.5.4 Design and Documentation
+### 3.5.4 Data Storage Strategy
+
+ToothyMate employs a hybrid data storage approach combining local storage with cloud database:
+
+| Storage Type | Technology | Purpose |
+|--------------|------------|---------|
+| **Local Cache** | SharedPreferences | Fast access to user data, offline support |
+| **Cloud Database** | Firebase Firestore | Persistent user data backup, cross-device sync |
+| **Authentication** | Firebase Anonymous Auth | Unique user identification without login |
+| **Static Content** | JSON Assets | Lesson content with bilingual support (EN/MS) |
+
+**Firebase Integration Benefits:**
+- **No Login Required:** Users are automatically assigned a unique anonymous ID
+- **Data Persistence:** User progress (XP, streaks, completed lessons) is backed up to cloud
+- **Chat History:** Conversation history with the AI chatbot is preserved
+- **Offline Support:** SharedPreferences serves as local cache when offline
+
+### 3.5.5 Design and Documentation
 
 | Tool | Purpose |
 |------|---------|
@@ -569,7 +660,7 @@ Several tools, frameworks, and programming platforms were employed in the develo
 | **Google Forms** | Survey data collection |
 | **Draw.io** | Flowcharts and diagrams |
 
-### 3.5.5 Asset Creation
+### 3.5.6 Asset Creation
 
 | Asset Type | Tools/Sources |
 |------------|---------------|
@@ -637,8 +728,10 @@ It is anticipated that the app will positively influence children's oral health 
 
 ## 3.8 Chapter Summary
 
-This chapter has described the methodology adopted for developing the ToothyMate mobile application. The Agile development approach enables iterative development with continuous feedback and flexibility. User requirement gathering through pre-survey provided valuable insights that shaped the application's features, validating the inclusion of gamification (81.4% support for streaks), AR visualization (4.40/5 usefulness rating), and AI classification (100% support for detection features).
+This chapter has described the methodology adopted for developing the ToothyMate mobile application. The project follows 8 structured phases across two semesters, with the Agile methodology applied during Phase 6 (Agile Development) through 7 iterative development cycles. This approach enables continuous feedback, flexibility, and incremental delivery of features.
 
-The system design section presented the application architecture, flowcharts, and use case diagrams that guide the implementation. The tools and technologies section detailed the Flutter framework, TensorFlow Lite for on-device AI, Google Gemini for chatbot functionality, and various supporting packages that enable the application's features.
+User requirement gathering through pre-survey provided valuable insights that shaped the application's features, validating the inclusion of gamification (81.4% support for streaks), AR visualization (4.40/5 usefulness rating), and AI classification (100% support for detection features).
+
+The system design section presented the application architecture, flowcharts, and use case diagrams that guide the implementation. The tools and technologies section detailed the Flutter framework, TensorFlow Lite for on-device AI, Google Gemini for chatbot functionality, Firebase Firestore for cloud data persistence, and various supporting packages that enable the application's features. The hybrid data storage strategy combining local SharedPreferences with Firebase Firestore ensures both fast offline access and reliable cloud backup of user progress.
 
 The next chapter will detail the implementation of each module, including the gamification system, AR visualization, AI classification, e-learning library, and AI chatbot companion.
